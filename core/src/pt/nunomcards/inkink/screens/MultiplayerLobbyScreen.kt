@@ -27,10 +27,10 @@ class MultiplayerLobbyScreen : Screen {
     private val teamBlue =          Texture(PATH_MP + "choose-team-blue.png")
     private val teamPurple =        Texture(PATH_MP + "choose-team-purple.png")
     // - Images
-    private val title =          Texture(PATH_FONT + "fnt_multiplayer.png")
-    private val background =     Texture("background.png")
-    private val button_back =    Texture("button-back.png")
-    private val check =    Texture("check.png")
+    private val title =             Texture(PATH_FONT + "fnt_multiplayer.png")
+    private val background =        Texture("background.png")
+    private val button_back =       Texture("button-back.png")
+    private val check =             Texture("check.png")
 
     private val batch = SpriteBatch()
     private val game: Game
@@ -90,5 +90,20 @@ class MultiplayerLobbyScreen : Screen {
 
     override fun resize(width: Int, height: Int) {}
 
-    override fun dispose() {}
+    override fun dispose() {
+        stage.dispose()
+        batch.dispose()
+
+        // Textures
+        teamRed.dispose()
+        teamOrange.dispose()
+        teamYellow.dispose()
+        teamGreen.dispose()
+        teamBlue.dispose()
+        teamPurple.dispose()
+        title.dispose()
+        background.dispose()
+        button_back.dispose()
+        check.dispose()
+    }
 }

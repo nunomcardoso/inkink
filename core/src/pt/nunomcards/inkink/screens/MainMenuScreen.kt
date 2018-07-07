@@ -103,6 +103,15 @@ class MainMenuScreen : Screen {
     override fun resize(width: Int, height: Int) {}
 
     override fun dispose() {
-        Gdx.input.inputProcessor = null
+        stage.dispose()
+        batch.dispose()
+
+        // TEXTURES
+        buttonPlayActive.dispose()
+        buttonPlayInactive.dispose()
+        buttonMultiplayerActive.dispose()
+        buttonMultiplayerInactive.dispose()
+        logo.dispose()
+        background.dispose()
     }
 }

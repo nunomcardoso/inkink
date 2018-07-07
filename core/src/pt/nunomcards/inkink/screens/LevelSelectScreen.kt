@@ -54,7 +54,7 @@ class LevelSelectScreen : Screen {
                 val btnLvl = UIFactory.createImageButton(Texture(PATH_LVL + "lvl-sp-0$lvlCounter.png"))
                 btnLvl.setSize(side, side)
                 btnLvl.setPosition(posX, posY)
-                btnLvl.addListener{ _ -> game.screen = LevelScreen(lvlCounter); Vibration.vibrate(); true }
+                btnLvl.addListener{ _ -> game.screen = LevelScreen(this.game, lvlCounter); Vibration.vibrate(); true }
                 stage.addActor(btnLvl)
 
                 posX += w / 3
@@ -74,7 +74,10 @@ class LevelSelectScreen : Screen {
         stage.addActor(backbutton)
     }
 
-    override fun hide() {}
+    override fun hide() {
+        stage.dispose()
+        batch.dispose()
+    }
 
     override fun show() {}
 
@@ -83,7 +86,7 @@ class LevelSelectScreen : Screen {
     private val w = Gdx.graphics.width.toFloat()
 
     private val titleW = w/3
-    private val titleH = title.height * titleW / title.width
+    private val titleH = titleW * title.height / title.width
     private val titlePosX = w/2 - titleW/2
     private val titlePosY = h - titleH
 
@@ -114,5 +117,11 @@ class LevelSelectScreen : Screen {
 
     override fun dispose() {
         stage.dispose()
+        batch.dispose()
+
+        // TEXTURES
+        title.dispose()
+        background.dispose()
+        button_back.dispose()
     }
 }

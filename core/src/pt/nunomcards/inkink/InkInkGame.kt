@@ -12,8 +12,6 @@ class InkInkGame : Game() {
     }
 
     override fun dispose() {
-        // dispose stuff
-        var x = 0
         super.dispose()
     }
 }
