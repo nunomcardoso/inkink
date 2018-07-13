@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.math.Vector
 import com.badlogic.gdx.physics.box2d.*
 
 /**
@@ -80,12 +79,23 @@ class LevelScreen : Screen {
 
         batch.begin()
         renderArena()
-        renderArenaLimitationsBox2D();
+        renderArenaLimitationsBox2D()
 
-        val chest = Texture("chest_sprite.png")
-        drawIsometric(4,4, chest)
-        val player = Texture("player.png")
-        drawIsometric(playerC,playerR, player)
+        //val chest = Texture("chest_sprite.png")
+        //drawIsometric(4,4, chest)
+
+        val playerx = TextureRegion(Texture("player.png"))
+        //drawIsometric(playerC,playerR, player)
+
+        val txtW = tileSizeW / 2
+        val txtH = txtW * (playerx.regionHeight/ playerx.regionWidth)
+        batch.draw(
+                playerx,
+                player!!.position.x * PPM - txtW/2,
+                player!!.position.y * PPM - txtH/2,
+                txtW,
+                txtH
+        )
 
         batch.end()
 
@@ -96,6 +106,7 @@ class LevelScreen : Screen {
 
         world.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS)
     }
+
 
     private fun drawIsometric(c: Int, r: Int, texture: Texture){
         val txtW = tileSizeW / 2
@@ -114,25 +125,23 @@ class LevelScreen : Screen {
     /**
      * PLAYER MOVEMENT
      */
-    var playerC = 0
-    var playerR = 0
     private fun update(delta: Float){
         player!!.linearVelocity = Vector2(0f,0f)
         val speed = 5f
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            player!!.applyLinearImpulse(Vector2(-speed, 0f), player!!.getWorldCenter(), true)
+            player!!.applyLinearImpulse(Vector2(-speed, 0f), player!!.worldCenter, true)
             //player!!.applyForceToCenter(-speed,0f,true)
         }
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            player!!.applyLinearImpulse(Vector2(speed, 0f), player!!.getWorldCenter(), true)
+            player!!.applyLinearImpulse(Vector2(speed, 0f), player!!.worldCenter, true)
             //player!!.applyForceToCenter(speed,0f,true)
         }
         if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            player!!.applyLinearImpulse(Vector2(0f, speed), player!!.getWorldCenter(), true)
+            player!!.applyLinearImpulse(Vector2(0f, speed), player!!.worldCenter, true)
             //player!!.applyForceToCenter(0f,speed,true)
         }
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            player!!.applyLinearImpulse(Vector2(0f, -speed), player!!.getWorldCenter(), true)
+            player!!.applyLinearImpulse(Vector2(0f, -speed), player!!.worldCenter, true)
             //player!!.applyForceToCenter(0f, -speed,true)
         }
     }
