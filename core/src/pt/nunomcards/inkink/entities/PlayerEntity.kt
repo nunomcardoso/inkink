@@ -1,5 +1,6 @@
 package pt.nunomcards.inkink.entities
 
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -13,19 +14,22 @@ import pt.nunomcards.inkink.utils.IsometricCoords
  */
 class PlayerEntity(
         private val player: Player,
-        private val batch: SpriteBatch,
-        private val world: World,
-        private val arena: ArenaEntity
-) : BaseEntity{
+        private val arena: ArenaEntity,
+        batch: SpriteBatch,
+        world: World,
+        camera: OrthographicCamera
+) : BaseEntity(batch, world, camera) {
 
     private val playerTexture = TextureRegion(Texture("player.png"))
-    private val body: Body
+    val body: Body
 
     init {
         body = placePlayer(IsometricCoords(0,0))
     }
 
     override fun render() {
+        batch.begin()
+
         val coords = GdxUtils.coordsBySize(arena.tileSizeW / 2, playerTexture.texture)
         val txtW = arena.tileSizeW / 2
         val txtH = txtW * (playerTexture.regionHeight/ playerTexture.regionWidth)
@@ -36,9 +40,15 @@ class PlayerEntity(
                 txtW,
                 txtH
         )
+
+        batch.end()
     }
 
-    private fun placePlayer(isoCoords: IsometricCoords): Body {
+    private fun getAnimation(){
+        player.team
+    }
+
+    fun placePlayer(isoCoords: IsometricCoords): Body {
         val shapeRadius = arena.tileSizeW / 4
 
         // Place the place in a specific tile
@@ -57,8 +67,13 @@ class PlayerEntity(
         val fixtureDef = FixtureDef()
         fixtureDef.shape = shape
         boddy.createFixture(fixtureDef)
+
         boddy.userData = "player"
 
         return boddy
+    }
+
+    override fun dispose(){
+
     }
 }

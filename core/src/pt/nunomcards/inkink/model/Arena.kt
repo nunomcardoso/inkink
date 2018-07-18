@@ -1,5 +1,6 @@
 package pt.nunomcards.inkink.model
 
+import pt.nunomcards.inkink.utils.IsometricCoords
 import java.util.*
 
 /**
@@ -25,7 +26,7 @@ class Arena (rows: Int, columns: Int) {
      *          . * * * .
      *          . . . . .
      */
-    fun placeBombInk(row: Int, col: Int){
+    fun placeBombInk(playerPosition: IsometricCoords){
 
     }
 
@@ -40,7 +41,7 @@ class Arena (rows: Int, columns: Int) {
      *          . . * . .
      *          . . * . .
      */
-    fun shootCannonInk(row: Int, col: Int){
+    fun shootCannonInk(playerPosition: IsometricCoords){
 
     }
 }

@@ -2,43 +2,41 @@ package pt.nunomcards.inkink.gamelogic
 
 import com.badlogic.gdx.math.Vector2
 import pt.nunomcards.inkink.entities.PlayerEntity
+import java.lang.Math.abs
 
 /**
  * Created by nuno on 13/07/2018.
  */
-class PlayerMovement(val player: PlayerEntity) {
+object PlayerMovement {
 
     // Movement Speed
-    private val speed = 5f
+    private val speed = 10f
+    private val stopVector = Vector2(0f,0f)
 
     // Stops body momentum
-    fun stopVelocity(){
-        player.body.linearVelocity = Vector2(0f,0f)
+    fun stopMovement(player: PlayerEntity){
+        player.body.linearVelocity = stopVector
     }
 
-    fun moveUp(){
-        stopVelocity()
+    fun moveUp(player: PlayerEntity){
         player.body.applyLinearImpulse(
                 Vector2(0f, speed), player.body.worldCenter, true
         )
     }
 
-    fun moveDown(){
-        stopVelocity()
+    fun moveDown(player: PlayerEntity){
         player.body.applyLinearImpulse(
                 Vector2(0f, -speed), player.body.worldCenter, true
         )
     }
 
-    fun moveLeft(){
-        stopVelocity()
+    fun moveLeft(player: PlayerEntity){
         player.body.applyLinearImpulse(
                 Vector2(-speed, 0f), player.body.worldCenter, true
         )
     }
 
-    fun moveRight(){
-        stopVelocity()
+    fun moveRight(player: PlayerEntity){
         player.body.applyLinearImpulse(
                 Vector2(speed, 0f), player.body.worldCenter, true
         )

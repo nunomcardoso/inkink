@@ -20,15 +20,15 @@ import pt.nunomcards.inkink.utils.IsometricCoords
 
 /**
  * THIS IS ONLY FOR SQUARE ARENAS
- * RECTANGULAR ARENAS (rows!=cols) DONT WORK LIKE THEY SHOULD
+ * RECTANGULAR ARENAS (rows!=cols) DOESNT WORK LIKE IT SHOULD
  */
 class ArenaEntity(
         private val rows: Int,
         private val cols: Int,
-        private val batch: SpriteBatch,
-        private val world: World,
-        private val camera: OrthographicCamera
-) : BaseEntity{
+        batch: SpriteBatch,
+        world: World,
+        camera: OrthographicCamera
+) : BaseEntity(batch, world, camera) {
 
     private val arena = Arena(rows,cols)
     private val tile = Texture("level/tile-flat.png")
@@ -42,14 +42,21 @@ class ArenaEntity(
     private val isoX = screenW/2 - tileSizeW/2
     private val isoY = screenH - (screenH-rows*tileSizeH)/2 - tileSizeH*2
 
+    init{
+        // Box 2D Limits
+        renderArenaLimitationsBox2D()
+    }
+
     override fun render() {
+        batch.begin()
+
         //
         // RENDER
         //
         var curX = isoX
         var curY = isoY
-        for(r in 1..rows){
-            for(c in 1..cols) {
+        for(r in 0 until rows){
+            for(c in 0 until cols) {
                 batch.draw(
                         getTileColor(arena.map[c][r].color),
                         curX, curY,
@@ -62,10 +69,10 @@ class ArenaEntity(
             curY = isoY - tileSizeH/2*r
         }
 
-        // RENDER TILE OBJECTS
-
+        batch.end()
     }
 
+    // Just needs to be "rendered" 1 time
     private fun renderArenaLimitationsBox2D(){
         // TODO: this measures are not perfect, work "fine" in 16:9 and 4:3 screens
 
@@ -107,11 +114,13 @@ class ArenaEntity(
     }
 
     fun useBomb(row: Int, col: Int){
-        arena.placeBombInk(row,col)
+        val playerPosition = IsometricCoords(row,col)
+        arena.placeBombInk(playerPosition)
     }
 
     fun useCannon(row: Int, col: Int){
-        arena.shootCannonInk(row,col)
+        val playerPosition = IsometricCoords(row,col)
+        arena.shootCannonInk(playerPosition)
     }
 
     // to draw textures on the arena
@@ -145,12 +154,13 @@ class ArenaEntity(
     }
 
     fun deviceToIso(x: Int, y: Int): IsometricCoords{
-        TODO("make the algorithm")
         return IsometricCoords(x, y)
     }
 
     private fun getTileColor(color: PaintColor): TextureRegion {
-        TODO("create the other colors")
         return TextureRegion(tile)
+    }
+
+    override fun dispose() {
     }
 }
