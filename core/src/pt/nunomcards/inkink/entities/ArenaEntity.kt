@@ -32,7 +32,7 @@ class ArenaEntity(
 ) : BaseEntity(batch, world, camera) {
 
     private val arena = Arena(rows,cols)
-    private val tile = Texture("level/tile-flat.png")
+    private val tile  = Texture("level/tile-flat.png")
     private val tileR = Texture("level/tile-flat-red.png")
     private val tileO = Texture("level/tile-flat-orange.png")
     private val tileY = Texture("level/tile-flat-yellow.png")
@@ -113,8 +113,8 @@ class ArenaEntity(
 
 
     fun colorTile(row: Int, col: Int, color: PaintColor){
-        //if(row > rows || row<0 || col>cols || col<0) return
-        println("PAINTING R: $row | C: $col")
+        if(row > rows || row<0 || col>cols || col<0)
+            return
         arena.map[row][col].color = color
     }
 

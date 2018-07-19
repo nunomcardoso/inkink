@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.utils.UIFactory
 import pt.nunomcards.inkink.utils.Vibration
 import sun.applet.Main
@@ -51,10 +52,11 @@ class LevelSelectScreen : Screen {
         var lvlCounter = 1
         for(r in 1..2) {
             for(c in 1..3) {
-                val btnLvl = UIFactory.createImageButton(Texture(PATH_LVL + "lvl-sp-0$lvlCounter.png"))
+                val currLvl = lvlCounter
+                val btnLvl = UIFactory.createImageButton(Texture(PATH_LVL + "lvl-sp-0$currLvl.png"))
                 btnLvl.setSize(side, side)
                 btnLvl.setPosition(posX, posY)
-                btnLvl.addListener{ _ -> game.screen = LevelScreen(this.game, lvlCounter); Vibration.vibrate(); true }
+                btnLvl.addListener{ _ -> game.screen = LevelScreen(this.game, PaintColor.values()[currLvl]); Vibration.vibrate(); true }
                 stage.addActor(btnLvl)
 
                 posX += w / 3

@@ -38,11 +38,11 @@ open class LevelEntity(
         arena.render()
 
         // DRAW Objects
-        tileobj.forEach { e -> e.render() }
+        //tileobj.forEach { e -> e.render() }
 
         // DRAW Players
         currentPlayer.render()
-        players.forEach { e -> e.render() }
+        //players.forEach { e -> e.render() }
     }
 
     override fun dispose() {

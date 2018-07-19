@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.physics.box2d.*
-import pt.nunomcards.inkink.model.PaintColor
+import pt.nunomcards.inkink.assetloader.PlayerAssetLoader
 import pt.nunomcards.inkink.model.Player
 import pt.nunomcards.inkink.utils.CartesianCoords
 import pt.nunomcards.inkink.utils.GdxUtils
@@ -30,20 +30,24 @@ class PlayerEntity(
     private val txtW: Float
     private val txtH: Float
 
+    private val assets: PlayerAssetLoader
     init {
         txtW = arena.tileSizeW / 2
         txtH = txtW * (playerTexture.regionHeight/ playerTexture.regionWidth)
         body = placePlayer(player.coordsIso)
+        assets = PlayerAssetLoader()
+        println("TEAM: ${player.team}")
     }
 
+    private var elapsed = 0f
     override fun render() {
         updatePlayerLocation()
-
+        elapsed+= Gdx.graphics.deltaTime
         batch.begin()
 
         val coords = GdxUtils.coordsBySize(arena.tileSizeW / 2, playerTexture.texture)
         batch.draw(
-                playerTexture,
+                assets.getKeyFrameTexture(player.team, elapsed),
                 body.position.x * GdxUtils.PPM - coords.first/2,
                 body.position.y * GdxUtils.PPM - coords.first/2,
                 txtW,
@@ -55,7 +59,7 @@ class PlayerEntity(
         // only current player should do this
         // in multiplayer the entities should not paint by their coords,
         // the server must tell witch tiles to color
-        arena.colorTile(player.coordsIso.row, player.coordsIso.col, PaintColor.RED)
+        arena.colorTile(player.coordsIso.row, player.coordsIso.col, player.team)
     }
 
     private fun getAnimation(){
