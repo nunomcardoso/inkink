@@ -60,20 +60,16 @@ class ArenaEntity(
         //
         // RENDER
         //
-        var curX = isoX
-        var curY = isoY
         for(r in 0 until rows){
             for(c in 0 until cols) {
+                var color = arena.map[r][c].color
+                val coordsCart = twoDtoIso(IsometricCoords(r,c))
                 batch.draw(
-                        getTileColor(arena.map[r][c].color),
-                        curX, curY,
+                        getTileColor(color),
+                        coordsCart.x, coordsCart.y,
                         tileSizeW, tileSizeH
                 )
-                curX += tileSizeW/2
-                curY -= tileSizeH/2
             }
-            curX = isoX - tileSizeW/2*r
-            curY = isoY - tileSizeH/2*r
         }
 
         batch.end()
@@ -117,9 +113,9 @@ class ArenaEntity(
 
 
     fun colorTile(row: Int, col: Int, color: PaintColor){
-        if(row > rows || row<0 || col>cols || col<0) return
+        //if(row > rows || row<0 || col>cols || col<0) return
         println("PAINTING R: $row | C: $col")
-        arena.map[row+1][col].color = color // TODO WHY +1 THO??
+        arena.map[row][col].color = color
     }
 
     fun useBomb(row: Int, col: Int){
@@ -150,6 +146,9 @@ class ArenaEntity(
     } */
 
     // row and col start at 0
+    // Vector2 is the bottom left corner of the rectangle that limits the tile
+    //     ┌───┐
+    //  -> └───┘
     fun twoDtoIso(coords: IsometricCoords): Vector2{
         var xx = isoX
         var yy = isoY
@@ -224,7 +223,6 @@ class ArenaEntity(
                 }
             }
         }
-
         return isoFromCart
     }
 

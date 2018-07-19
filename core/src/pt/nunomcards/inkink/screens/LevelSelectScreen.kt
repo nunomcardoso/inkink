@@ -116,7 +116,7 @@ class LevelSelectScreen : Screen {
     }
 
     override fun dispose() {
-        stage.dispose()
+        //stage.dispose()
         batch.dispose()
 
         // TEXTURES

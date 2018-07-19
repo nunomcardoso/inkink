@@ -18,8 +18,9 @@ class SinglePlayerLevelEntity(
     private val level: LevelEntity
 
     init {
-        val player = Player("nuno")
+        val player = Player(id="nuno", coordsIso = IsometricCoords(0,0))
         level = LevelEntity(player, batch, world, camera)
+
     }
 
     override fun render() {
@@ -31,7 +32,4 @@ class SinglePlayerLevelEntity(
 
     }
 
-    fun setPlayerCoords(isometricCoords: IsometricCoords){
-        level.currentPlayer.placePlayer(isometricCoords)
-    }
 }

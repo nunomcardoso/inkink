@@ -27,16 +27,21 @@ class PlayerEntity(
     private val playerTexture = TextureRegion(Texture("player.png"))
     val body: Body
 
+    private val txtW: Float
+    private val txtH: Float
+
     init {
-        body = placePlayer(IsometricCoords(2,2))
+        txtW = arena.tileSizeW / 2
+        txtH = txtW * (playerTexture.regionHeight/ playerTexture.regionWidth)
+        body = placePlayer(player.coordsIso)
     }
 
     override fun render() {
+        updatePlayerLocation()
+
         batch.begin()
 
         val coords = GdxUtils.coordsBySize(arena.tileSizeW / 2, playerTexture.texture)
-        val txtW = arena.tileSizeW / 2
-        val txtH = txtW * (playerTexture.regionHeight/ playerTexture.regionWidth)
         batch.draw(
                 playerTexture,
                 body.position.x * GdxUtils.PPM - coords.first/2,
@@ -47,8 +52,10 @@ class PlayerEntity(
 
         batch.end()
 
-        val coordsIso = playerIsometricCoords()
-        arena.colorTile(coordsIso.row, coordsIso.col, PaintColor.RED)
+        // only current player should do this
+        // in multiplayer the entities should not paint by their coords,
+        // the server must tell witch tiles to color
+        arena.colorTile(player.coordsIso.row, player.coordsIso.col, PaintColor.RED)
     }
 
     private fun getAnimation(){
@@ -58,8 +65,10 @@ class PlayerEntity(
 
     fun placePlayer(isoCoords: IsometricCoords): Body {
         // Place the place in a specific tile
-        isoCoords.row-=1 // for some reason this needs to have -1 rows
         val coords = arena.twoDtoIso(isoCoords)
+        // needs to be in the middle now
+        coords.x += txtW
+        coords.y += txtH/2
 
         val shapeRadius = arena.tileSizeW / 4
 
@@ -76,21 +85,28 @@ class PlayerEntity(
         fixtureDef.shape = shape
         boddy.createFixture(fixtureDef)
 
-        boddy.userData = "player"
+        boddy.userData = player.id
 
         return boddy
     }
 
-    fun playerIsometricCoords(): IsometricCoords{
-        // TODO coordenadas da ponta
+
+    fun updatePlayerLocation(){
         val shapeRadius = arena.tileSizeW / 4
 
-        // Coordenadas do centro
         val bodyX = body.position.x * PPM
-        val bodyY = body.position.y * PPM - shapeRadius
+        val bodyY = body.position.y * PPM
 
-        val bodyCoords = CartesianCoords(bodyX.toInt(), bodyY.toInt())
-        return arena.deviceToIsoCoords(bodyCoords)
+        // update Player Coords
+        player.coordsCart.x = bodyX.toInt()
+        player.coordsCart.y = bodyY.toInt()
+
+        val bodyCoords = CartesianCoords(bodyX.toInt(), (bodyY- shapeRadius*.8).toInt())
+
+        val iso = arena.deviceToIsoCoords(bodyCoords)
+        // update Player Coords
+        player.coordsIso.row = iso.row
+        player.coordsIso.col = iso.col
     }
 
     override fun dispose(){
