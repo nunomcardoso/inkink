@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.EdgeShape
 import com.badlogic.gdx.physics.box2d.World
 import pt.nunomcards.inkink.model.Arena
 import pt.nunomcards.inkink.model.PaintColor
+import pt.nunomcards.inkink.utils.CartesianCoords
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.screenH
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.screenW
 import pt.nunomcards.inkink.utils.IsometricCoords
@@ -32,6 +33,12 @@ class ArenaEntity(
 
     private val arena = Arena(rows,cols)
     private val tile = Texture("level/tile-flat.png")
+    private val tileR = Texture("level/tile-flat-red.png")
+    private val tileO = Texture("level/tile-flat-orange.png")
+    private val tileY = Texture("level/tile-flat-yellow.png")
+    private val tileG = Texture("level/tile-flat-green.png")
+    private val tileB = Texture("level/tile-flat-blue.png")
+    private val tileP = Texture("level/tile-flat-purple.png")
 
     // Works fine for Square arenas
     private val scaleFactor = .9f
@@ -39,8 +46,8 @@ class ArenaEntity(
     val tileSizeH = tileSizeW * (tile.height.toFloat() / tile.width.toFloat())
 
     // Start point where the arena will be built
-    private val isoX = screenW/2 - tileSizeW/2
-    private val isoY = screenH - (screenH-rows*tileSizeH)/2 - tileSizeH*2
+    val isoX = screenW/2 - tileSizeW/2
+    val isoY = screenH - (screenH-rows*tileSizeH)/2 - tileSizeH*2
 
     init{
         // Box 2D Limits
@@ -58,7 +65,7 @@ class ArenaEntity(
         for(r in 0 until rows){
             for(c in 0 until cols) {
                 batch.draw(
-                        getTileColor(arena.map[c][r].color),
+                        getTileColor(arena.map[r][c].color),
                         curX, curY,
                         tileSizeW, tileSizeH
                 )
@@ -110,7 +117,9 @@ class ArenaEntity(
 
 
     fun colorTile(row: Int, col: Int, color: PaintColor){
-        arena.map[row][col].color = color
+        if(row > rows || row<0 || col>cols || col<0) return
+        println("PAINTING R: $row | C: $col")
+        arena.map[row+1][col].color = color // TODO WHY +1 THO??
     }
 
     fun useBomb(row: Int, col: Int){
@@ -123,7 +132,9 @@ class ArenaEntity(
         arena.shootCannonInk(playerPosition)
     }
 
-    // to draw textures on the arena
+    /*
+    //to draw textures on the arena
+    // works great DO NOT DELETE
     fun drawIsometric(c: Int, r: Int, texture: Texture){
         val txtW = tileSizeW / 2
         val txtH = txtW * (texture.height / texture.width)
@@ -136,7 +147,7 @@ class ArenaEntity(
                 coords.x, coords.y,
                 txtW, txtH
         )
-    }
+    } */
 
     // row and col start at 0
     fun twoDtoIso(coords: IsometricCoords): Vector2{
@@ -153,12 +164,68 @@ class ArenaEntity(
         return Vector2(xx,yy)
     }
 
-    fun deviceToIso(x: Int, y: Int): IsometricCoords{
-        return IsometricCoords(x, y)
+    private fun getTileColor(color: PaintColor): TextureRegion {
+        return when(color){
+            PaintColor.WHITE        -> TextureRegion(tile)
+            PaintColor.RED          -> TextureRegion(tileR)
+            PaintColor.ORANGE       -> TextureRegion(tileO)
+            PaintColor.YELLOW       -> TextureRegion(tileY)
+            PaintColor.GREEN        -> TextureRegion(tileG)
+            PaintColor.BLUE         -> TextureRegion(tileB)
+            PaintColor.PURPLE       -> TextureRegion(tileP)
+        }
     }
 
-    private fun getTileColor(color: PaintColor): TextureRegion {
-        return TextureRegion(tile)
+    fun deviceToIsoCoords(coords: CartesianCoords): IsometricCoords{
+        val isoFromCart = IsometricCoords(-1,-1)
+
+        val k = tileSizeW / 4
+        for(r in 0 until rows) {
+            for (c in 0 until cols) {
+                val tileDrawCoords = twoDtoIso(IsometricCoords(r,c))
+                tileDrawCoords.x += tileSizeW/2
+                tileDrawCoords.y += tileSizeH/2
+
+                val tileMiddle = tileDrawCoords
+                // substract the coords for the middle of the tile
+                val cX = coords.x - tileMiddle.x
+                val cY = coords.y - tileMiddle.y
+
+                /*
+                    WORKED 1st try 8) (when the user coords were send properly...)
+                          |
+                       Q2 | Q1
+                    ------+------
+                       Q3 | Q4
+                          |
+                    (x,y) is the coords of the point in the tile
+                    Q1 equation         y <= -0.5x + K
+                    Q2 equation         y <=  0.5x + K
+                    Q3 equation         y >= -0.5x - K
+                    Q4 equation         y >=  0.5x - K
+
+                    The tile is centered in (0,0).
+                    All equation must be true to get the right tile.
+
+                    TileW = 4 * K
+                    TileH = 2 * K
+                 */
+
+                val q1 = (cY <= -0.5*cX + k)
+                val q2 = (cY <=  0.5*cX + k)
+                val q3 = (cY >= -0.5*cX - k)
+                val q4 = (cY >=  0.5*cX - k)
+
+                if( q1 && q2 && q3 && q4) {
+                    // Found it
+                    isoFromCart.row = r
+                    isoFromCart.col = c
+                    return isoFromCart
+                }
+            }
+        }
+
+        return isoFromCart
     }
 
     override fun dispose() {
