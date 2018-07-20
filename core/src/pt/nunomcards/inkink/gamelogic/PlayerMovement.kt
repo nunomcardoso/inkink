@@ -2,7 +2,6 @@ package pt.nunomcards.inkink.gamelogic
 
 import com.badlogic.gdx.math.Vector2
 import pt.nunomcards.inkink.entities.PlayerEntity
-import java.lang.Math.abs
 
 /**
  * Created by nuno on 13/07/2018.
@@ -10,7 +9,7 @@ import java.lang.Math.abs
 object PlayerMovement {
 
     // Movement Speed
-    private val speed = 10f
+    private val speed = 15f
     private val stopVector = Vector2(0f,0f)
 
     // Stops body momentum

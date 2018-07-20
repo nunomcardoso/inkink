@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.physics.box2d.World
 import pt.nunomcards.inkink.model.Player
+import pt.nunomcards.inkink.utils.CartesianCoords
 import java.util.*
 
 /**
@@ -17,8 +18,8 @@ open class LevelEntity(
 ) : BaseEntity(batch, world, camera) {
 
     val currentPlayer: PlayerEntity
-    val players: List<PlayerEntity> = LinkedList()
-    val tileobj: List<TileObjectEntity> = LinkedList()
+    private val players: ArrayList<PlayerEntity> = ArrayList()
+    val tileobj: ArrayList<TileObjectEntity> = ArrayList()
 
     val arena: ArenaEntity
     val hud: HUDEntity
@@ -30,10 +31,22 @@ open class LevelEntity(
         hud = HUDEntity(currentPlayer,batch, world, camera)
     }
 
-    override fun render() {
-        // DRAW HUD
-        hud.render()
+    fun addRemotePlayer(remPlayer: Player, coords: CartesianCoords){
+        val p = PlayerEntity(remPlayer, arena, batch, world, camera)
+        p.placePlayer(coords)
+        players.add(p)
+    }
 
+    fun removeRemotePlayer(remPlayerId: String){
+        players.remove(players.first { p -> p.player.id== remPlayerId })
+    }
+
+    fun moveRemotePlayer(remPlayerId: String, coords: CartesianCoords){
+        val p = players.first { p -> p.player.id== remPlayerId }
+        // update Coords //TODO
+    }
+
+    override fun render() {
         // DRAW Arena
         arena.render()
 
@@ -42,7 +55,10 @@ open class LevelEntity(
 
         // DRAW Players
         currentPlayer.render()
-        //players.forEach { e -> e.render() }
+        players.forEach { e -> e.render() }
+
+        // DRAW HUD
+        hud.render()
     }
 
     override fun dispose() {

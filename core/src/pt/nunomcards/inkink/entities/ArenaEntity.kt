@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.EdgeShape
 import com.badlogic.gdx.physics.box2d.World
 import pt.nunomcards.inkink.model.Arena
 import pt.nunomcards.inkink.model.PaintColor
+import pt.nunomcards.inkink.multiplayer.MultiplayerHandler
 import pt.nunomcards.inkink.utils.CartesianCoords
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.screenH
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.screenW
@@ -24,8 +25,8 @@ import pt.nunomcards.inkink.utils.IsometricCoords
  * RECTANGULAR ARENAS (rows!=cols) DOESNT WORK LIKE IT SHOULD
  */
 class ArenaEntity(
-        private val rows: Int,
-        private val cols: Int,
+        val rows: Int,
+        val cols: Int,
         batch: SpriteBatch,
         world: World,
         camera: OrthographicCamera
@@ -116,6 +117,11 @@ class ArenaEntity(
         if(row > rows || row<0 || col>cols || col<0)
             return
         arena.map[row][col].color = color
+
+        tryUpdateMultiplayer(row,col,color)
+    }
+    private fun tryUpdateMultiplayer(row: Int, col: Int, color: PaintColor){
+        MultiplayerHandler.paintTile(color, IsometricCoords(row,col))
     }
 
     fun useBomb(row: Int, col: Int){
@@ -224,6 +230,56 @@ class ArenaEntity(
             }
         }
         return isoFromCart
+    }
+
+    /*
+        ┌───┐  ~Isometric coords~
+        └───┘  top tile (0,0)
+         ...
+        ┌───┐
+        └───┘  last tile (side, side)
+     */
+    fun convertToRemoteCoords(coords: CartesianCoords): Triple<Float,Float, Float>{
+        val topTileY = isoY + tileSizeH/2
+        val bottomTileY = isoY + tileSizeH/2 + tileSizeH*rows
+
+        val d = topTileY-bottomTileY
+        val middleOfArenaX = screenW/2
+        val middleOfArenaY = topTileY - d/2
+
+        val x = coords.x - middleOfArenaX
+        val y = coords.y - middleOfArenaY
+
+        return Triple(x,y, tileSizeH)
+    }
+
+    fun convertFromRemoteCoords(coordsX: Float, coordsY: Float , tileH: Float): CartesianCoords{
+        val tileW = tileH*2
+
+        val curMaxX = tileSizeW*(rows/2)
+        val curMaxY = tileSizeH*(rows/2)
+
+        val remoteMaxX = tileH*(rows/2)
+        val remoteMaxY = tileW*(rows/2)
+
+        // CONVERSION
+        val convertedCoord = CartesianCoords(0,0)
+        convertedCoord.x = (coordsX * curMaxX / remoteMaxX).toInt()
+        convertedCoord.y = (coordsY * curMaxY / remoteMaxY).toInt()
+
+        //
+        // SUM middle of arena
+        val topTileY = isoY + tileSizeH/2
+        val bottomTileY = isoY + tileSizeH/2 + tileSizeH*rows
+
+        val d = topTileY-bottomTileY
+        val middleOfArenaX = screenW/2
+        val middleOfArenaY = topTileY - d/2
+
+        convertedCoord.x += middleOfArenaX.toInt()
+        convertedCoord.y += middleOfArenaY.toInt()
+
+        return convertedCoord
     }
 
     override fun dispose() {

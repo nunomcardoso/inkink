@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.ScreenViewport
+import pt.nunomcards.inkink.model.GameMode
+import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.utils.UIFactory
 import pt.nunomcards.inkink.utils.Vibration
 
@@ -49,8 +51,31 @@ class MultiplayerLobbyScreen : Screen {
         root.setFillParent(true)
         stage.addActor(root)
 
-        // BACK BUTTON
+        val btnArr = arrayOf(teamRed, teamOrange, teamYellow, teamGreen, teamBlue, teamPurple)
+
+        // LVL BUTTONS
         val side = w / 6
+        var posX = w / 2 - side / 2 - w/3
+        var posY = titlePosY - side - h / 15
+        var counter = 0
+        for(r in 1..2) {
+            for(c in 1..3) {
+                val btnLvl = UIFactory.createImageButton(btnArr[counter])
+                btnLvl.setSize(side, side)
+                btnLvl.setPosition(posX, posY)
+                btnLvl.addListener{ _ -> game.screen = LevelScreen(GameMode.MULTIPLAYER, this.game, PaintColor.WHITE); Vibration.vibrate(); true }
+                stage.addActor(btnLvl)
+
+                posX += w / 3
+                //posY += 0
+                counter+=1
+            }
+            // reset X & update Y
+            posX = w / 2 - side / 2 - w/3
+            posY -= side + h/30
+        }
+
+        // BACK BUTTON
         val backbutton = UIFactory.createImageButton(button_back)
         backbutton.setSize(side, button_back.height*side/button_back.width)
         backbutton.setPosition(w/60,w/60)
@@ -91,9 +116,6 @@ class MultiplayerLobbyScreen : Screen {
     override fun resize(width: Int, height: Int) {}
 
     override fun dispose() {
-        stage.dispose()
-        batch.dispose()
-
         // Textures
         teamRed.dispose()
         teamOrange.dispose()

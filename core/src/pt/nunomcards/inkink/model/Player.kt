@@ -19,5 +19,7 @@ class Player(
         // Weapons that the player owns
         val weapons: List<Weapon> = LinkedList(),
         // Ink Meter, ammount that the player has left [0, 100] (1 per block)
-        val inkMeter: Float = 100f) {
+        val inkMeter: Float = 100f,
+        // If the player is Local(true) or Remote(false)
+        val currentPlayer: Boolean = false) {
 }

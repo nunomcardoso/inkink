@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.*
 import pt.nunomcards.inkink.assetloader.PlayerAssetLoader
 import pt.nunomcards.inkink.model.Player
+import pt.nunomcards.inkink.multiplayer.MultiplayerHandler
 import pt.nunomcards.inkink.utils.CartesianCoords
 import pt.nunomcards.inkink.utils.GdxUtils
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.PPM
@@ -17,7 +19,7 @@ import pt.nunomcards.inkink.utils.IsometricCoords
  * Created by nuno on 13/07/2018.
  */
 class PlayerEntity(
-        private val player: Player,
+        val player: Player,
         private val arena: ArenaEntity,
         batch: SpriteBatch,
         world: World,
@@ -25,7 +27,7 @@ class PlayerEntity(
 ) : BaseEntity(batch, world, camera) {
 
     private val playerTexture = TextureRegion(Texture("player.png"))
-    val body: Body
+    lateinit var body: Body
 
     private val txtW: Float
     private val txtH: Float
@@ -34,14 +36,15 @@ class PlayerEntity(
     init {
         txtW = arena.tileSizeW / 2
         txtH = txtW * (playerTexture.regionHeight/ playerTexture.regionWidth)
-        body = placePlayer(player.coordsIso)
+        createPlayerBody(player.coordsIso)
         assets = PlayerAssetLoader()
-        println("TEAM: ${player.team}")
     }
 
     private var elapsed = 0f
     override fun render() {
-        updatePlayerLocation()
+        if(updatePlayerLocation())
+            tryUpdateMultiplayer()
+
         elapsed+= Gdx.graphics.deltaTime
         batch.begin()
 
@@ -59,22 +62,43 @@ class PlayerEntity(
         // only current player should do this
         // in multiplayer the entities should not paint by their coords,
         // the server must tell witch tiles to color
-        arena.colorTile(player.coordsIso.row, player.coordsIso.col, player.team)
+        if(player.currentPlayer)
+            arena.colorTile(player.coordsIso.row, player.coordsIso.col, player.team)
     }
 
-    private fun getAnimation(){
-        player.team
-    }
+    val shapeRadius = arena.tileSizeW / 4
 
-
-    fun placePlayer(isoCoords: IsometricCoords): Body {
+    // teleports the player
+    fun placePlayer(isoCoords: IsometricCoords){
         // Place the place in a specific tile
         val coords = arena.twoDtoIso(isoCoords)
         // needs to be in the middle now
         coords.x += txtW
         coords.y += txtH/2
 
-        val shapeRadius = arena.tileSizeW / 4
+        // update positions
+        player.coordsCart.x = coords.x.toInt()
+        player.coordsCart.y = coords.y.toInt()
+        player.coordsIso.col = isoCoords.col
+        player.coordsIso.row = isoCoords.row
+
+        body.setTransform(Vector2(coords.x,coords.y), 0f)
+    }
+
+    fun placePlayer(cartesianCoords: CartesianCoords){
+        // update positions
+        player.coordsCart.x = cartesianCoords.x
+        player.coordsCart.y = cartesianCoords.y
+
+        body.setTransform(Vector2(cartesianCoords.x.toFloat(), cartesianCoords.y.toFloat()), 0f)
+    }
+
+    private fun createPlayerBody(isoCoords: IsometricCoords) {
+        // Place the place in a specific tile
+        val coords = arena.twoDtoIso(isoCoords)
+        // needs to be in the middle now
+        coords.x += txtW
+        coords.y += txtH/2
 
         val bodyDef = BodyDef()
         bodyDef.type = BodyDef.BodyType.DynamicBody
@@ -91,11 +115,13 @@ class PlayerEntity(
 
         boddy.userData = player.id
 
-        return boddy
+        body = boddy
     }
 
+    private val previousPosition = CartesianCoords(player.coordsCart.x, player.coordsCart.y)
+    fun updatePlayerLocation(): Boolean{
+        //if(!hasMoved()) return false
 
-    fun updatePlayerLocation(){
         val shapeRadius = arena.tileSizeW / 4
 
         val bodyX = body.position.x * PPM
@@ -111,6 +137,23 @@ class PlayerEntity(
         // update Player Coords
         player.coordsIso.row = iso.row
         player.coordsIso.col = iso.col
+
+        return true
+    }
+
+    // CHECKS IF PLAYER HAS MOVED
+    private fun hasMoved(): Boolean{
+        if(previousPosition.x != player.coordsCart.x || previousPosition.y != player.coordsCart.x){
+            // update prev.
+            previousPosition.x = player.coordsCart.x
+            previousPosition.y = player.coordsCart.y
+            return true
+        }
+        return false
+    }
+
+    fun tryUpdateMultiplayer(){
+        MultiplayerHandler.moveCurrentPlayer(player.id, player.coordsCart)
     }
 
     override fun dispose(){

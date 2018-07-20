@@ -34,7 +34,7 @@ public class PlayerAssetLoader {
     public PlayerAssetLoader(){
         Texture texturePlayers = new Texture("player_sprite.png");
         int step = 16; //pixels
-        float frameDuration = 0.5f;
+        float frameDuration = 0.2f;
 
         for(int color= 0; color<=7; color++) {
             for (int pos= 0; pos<=3; pos++){

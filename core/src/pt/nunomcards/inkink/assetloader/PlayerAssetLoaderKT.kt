@@ -48,13 +48,13 @@ class PlayerAssetLoaderKT {
             }
 
         // Animation Creator
-        /*playerWhiteAnim=    Animation(frameDuration, playerWhite.toArray()), Animation.PlayMode.NORMAL)
-        playerRedAnim=      Animation(frameDuration, playerRed.toArray(), Animation.PlayMode.NORMAL)
-        playerOrangeAnim=   Animation(frameDuration, playerOrange.toArray(), Animation.PlayMode.NORMAL)
-        playerYellowAnim=   Animation(frameDuration, playerYellow.toArray(), Animation.PlayMode.NORMAL)
-        playerGreenAnim=    Animation(frameDuration, playerGreen.toArray(), Animation.PlayMode.NORMAL)
-        playerBlueAnim=     Animation(frameDuration, playerBlue.toArray(), Animation.PlayMode.NORMAL)
-        playerPurpleAnim=   Animation(frameDuration, playerPurple.toArray(), Animation.PlayMode.NORMAL)
+        /*playerWhiteAnim=    Animation(frameDuration, playerWhite.toArray()), Animation.GameMode.NORMAL)
+        playerRedAnim=      Animation(frameDuration, playerRed.toArray(), Animation.GameMode.NORMAL)
+        playerOrangeAnim=   Animation(frameDuration, playerOrange.toArray(), Animation.GameMode.NORMAL)
+        playerYellowAnim=   Animation(frameDuration, playerYellow.toArray(), Animation.GameMode.NORMAL)
+        playerGreenAnim=    Animation(frameDuration, playerGreen.toArray(), Animation.GameMode.NORMAL)
+        playerBlueAnim=     Animation(frameDuration, playerBlue.toArray(), Animation.GameMode.NORMAL)
+        playerPurpleAnim=   Animation(frameDuration, playerPurple.toArray(), Animation.GameMode.NORMAL)
         */
     }
 

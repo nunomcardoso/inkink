@@ -76,7 +76,6 @@ class HUDEntity(
         dpadRight.setPosition(r_posX,r_posY)
         dpadRight.addListener { _ ->
             InputHandler.movePlayer(player, Movement.RIGHT)
-            Vibration.vibrate(10)
             true
         }
         stage.addActor(dpadRight)
@@ -86,7 +85,6 @@ class HUDEntity(
         dpadLeft.setPosition(l_posX,l_posY)
         dpadLeft.addListener { _ ->
             InputHandler.movePlayer(player, Movement.LEFT)
-            Vibration.vibrate(10)
             true
         }
         stage.addActor(dpadLeft)
@@ -96,7 +94,6 @@ class HUDEntity(
         dpadUp.setPosition(u_posX,u_posY)
         dpadUp.addListener { _ ->
             InputHandler.movePlayer(player, Movement.UP)
-            Vibration.vibrate(10)
             true
         }
         stage.addActor(dpadUp)
@@ -106,7 +103,6 @@ class HUDEntity(
         dpadDown.setPosition(d_posX,d_posY)
         dpadDown.addListener { _ ->
             InputHandler.movePlayer(player, Movement.DOWN)
-            Vibration.vibrate(10)
             true
         }
         stage.addActor(dpadDown)

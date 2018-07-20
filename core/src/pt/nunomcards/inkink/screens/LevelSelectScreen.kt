@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import pt.nunomcards.inkink.model.GameMode
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.utils.UIFactory
 import pt.nunomcards.inkink.utils.Vibration
-import sun.applet.Main
 
 
 /**
@@ -56,7 +56,11 @@ class LevelSelectScreen : Screen {
                 val btnLvl = UIFactory.createImageButton(Texture(PATH_LVL + "lvl-sp-0$currLvl.png"))
                 btnLvl.setSize(side, side)
                 btnLvl.setPosition(posX, posY)
-                btnLvl.addListener{ _ -> game.screen = LevelScreen(this.game, PaintColor.values()[currLvl]); Vibration.vibrate(); true }
+                btnLvl.addListener{ _ ->
+                    game.screen = LevelScreen(GameMode.SINGLEPLAYER, this.game, PaintColor.values()[currLvl])
+                    Vibration.vibrate()
+                    true
+                 }
                 stage.addActor(btnLvl)
 
                 posX += w / 3
@@ -76,10 +80,7 @@ class LevelSelectScreen : Screen {
         stage.addActor(backbutton)
     }
 
-    override fun hide() {
-        stage.dispose()
-        batch.dispose()
-    }
+    override fun hide() {}
 
     override fun show() {}
 
@@ -118,9 +119,6 @@ class LevelSelectScreen : Screen {
     }
 
     override fun dispose() {
-        //stage.dispose()
-        batch.dispose()
-
         // TEXTURES
         title.dispose()
         background.dispose()
