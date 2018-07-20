@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.viewport.ScreenViewport
+import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.utils.UIFactory
 import pt.nunomcards.inkink.utils.Vibration
 
@@ -81,7 +82,9 @@ class MainMenuScreen : Screen {
 
     override fun hide() {}
 
-    override fun show() {}
+    override fun show() {
+
+    }
 
     override fun render(delta: Float) {
         batch.begin()

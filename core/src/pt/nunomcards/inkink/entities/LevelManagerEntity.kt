@@ -30,6 +30,10 @@ class LevelManagerEntity(
         if(mode == GameMode.MULTIPLAYER){
             MultiplayerHandler.init(level)
         }
+        else{
+            level.currentPlayer.player.team = PaintColor.WHITE
+            level.arena.colorMap(color)
+        }
     }
 
     override fun render() {

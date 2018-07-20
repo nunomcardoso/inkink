@@ -9,9 +9,9 @@ import java.util.*
  */
 class Player(
         // Player identifier
-        val id: String,
+        var id: String,
         // Color that the player will color the tiles
-        val team: PaintColor = PaintColor.WHITE,
+        var team: PaintColor = PaintColor.WHITE,
         // Device coords of the player
         val coordsCart: CartesianCoords = CartesianCoords(0,0),
         // Arena Coords of the player

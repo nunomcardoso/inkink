@@ -55,6 +55,12 @@ class ArenaEntity(
         renderArenaLimitationsBox2D()
     }
 
+    fun colorMap(color: PaintColor){
+        for(r in 0 until rows)
+            for(c in 0 until cols)
+                arena.map[r][c].color = color
+    }
+
     override fun render() {
         batch.begin()
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.model.GameMode
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.utils.UIFactory
@@ -76,7 +77,11 @@ class LevelSelectScreen : Screen {
         val backbutton = UIFactory.createImageButton(button_back)
         backbutton.setSize(side, button_back.height*side/button_back.width)
         backbutton.setPosition(w/60,w/60)
-        backbutton.addListener { _ -> game.screen= MainMenuScreen(game); Vibration.vibrate(); true }
+        backbutton.addListener { _ ->
+            Vibration.vibrate()
+            game.screen= MainMenuScreen(game)
+            true
+        }
         stage.addActor(backbutton)
     }
 

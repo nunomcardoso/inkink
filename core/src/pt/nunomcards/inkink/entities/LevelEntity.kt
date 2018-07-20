@@ -38,12 +38,12 @@ open class LevelEntity(
     }
 
     fun removeRemotePlayer(remPlayerId: String){
-        players.remove(players.first { p -> p.player.id== remPlayerId })
+        players.remove(players.first { p -> p.player.id.equals(remPlayerId) })
     }
 
     fun moveRemotePlayer(remPlayerId: String, coords: CartesianCoords){
-        val p = players.first { p -> p.player.id== remPlayerId }
-        // update Coords //TODO
+        val p = players.first { p -> p.player.id.equals(remPlayerId) }
+        p.placePlayer(coords)
     }
 
     override fun render() {

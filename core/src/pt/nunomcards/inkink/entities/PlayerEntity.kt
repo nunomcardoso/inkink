@@ -42,8 +42,8 @@ class PlayerEntity(
 
     private var elapsed = 0f
     override fun render() {
-        if(updatePlayerLocation())
-            tryUpdateMultiplayer()
+        updatePlayerLocation()
+        tryUpdateMultiplayer()
 
         elapsed+= Gdx.graphics.deltaTime
         batch.begin()

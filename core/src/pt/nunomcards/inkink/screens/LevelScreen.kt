@@ -74,7 +74,6 @@ class LevelScreen : Screen {
             true
         }
         stage.addActor(backbutton)
-
     }
     private val button_back = Texture("button-back.png")
     // DIMENSIONS
