@@ -7,13 +7,16 @@ import java.util.*
  * Created by nuno on 13/07/2018.
  */
 
-class Arena (rows: Int, columns: Int) {
+class Arena (
+        val rows: Int,
+        val columns: Int
+) {
 
     // creates the bi-dimensional array
     val map: Array<Array<Tile>> = Array(rows, {Array(columns, {Tile()})})
 
-    // coins, crates and warp points with actual position
-    val tileObjs: List<Pair<TileObject,Object>> = LinkedList()
+    // coins, crates and warp points
+    val tileObjs: LinkedList<TileObject> = LinkedList()
 
     /**
      *      |   BOMB   |
@@ -26,7 +29,7 @@ class Arena (rows: Int, columns: Int) {
      *          . * * * .
      *          . . . . .
      */
-    fun placeBombInk(playerPosition: IsometricCoords){
+    fun placeBombInk(playerPosition: IsometricCoords, color: PaintColor){
 
     }
 
@@ -41,7 +44,7 @@ class Arena (rows: Int, columns: Int) {
      *          . . * . .
      *          . . * . .
      */
-    fun shootCannonInk(playerPosition: IsometricCoords){
+    fun shootCannonInk(playerPosition: IsometricCoords, color: PaintColor){
 
     }
 }

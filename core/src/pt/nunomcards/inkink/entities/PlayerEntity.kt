@@ -32,12 +32,10 @@ class PlayerEntity(
     private val txtW: Float
     private val txtH: Float
 
-    private val assets: PlayerAssetLoader
     init {
         txtW = arena.tileSizeW / 2
         txtH = txtW * (playerTexture.regionHeight/ playerTexture.regionWidth)
         createPlayerBody(player.coordsIso)
-        assets = PlayerAssetLoader()
     }
 
     private var elapsed = 0f
@@ -50,7 +48,7 @@ class PlayerEntity(
 
         val coords = GdxUtils.coordsBySize(arena.tileSizeW / 2, playerTexture.texture)
         batch.draw(
-                assets.getKeyFrameTexture(player.team, elapsed),
+                PlayerAssetLoader.getKeyFrameTexture(player.team, elapsed),
                 body.position.x * GdxUtils.PPM - coords.first/2,
                 body.position.y * GdxUtils.PPM - coords.first/2,
                 txtW,
@@ -142,6 +140,7 @@ class PlayerEntity(
     }
 
     // CHECKS IF PLAYER HAS MOVED
+    // CHANGE TO ISOMETRIC
     private fun hasMoved(): Boolean{
         if(previousPosition.x != player.coordsCart.x || previousPosition.y != player.coordsCart.x){
             // update prev.

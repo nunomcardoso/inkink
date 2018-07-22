@@ -17,9 +17,9 @@ class Player(
         // Arena Coords of the player
         val coordsIso: IsometricCoords = IsometricCoords(0,0),
         // Weapons that the player owns
-        val weapons: List<Weapon> = LinkedList(),
+        val weapons: Set<Weapon> = HashSet(),
         // Ink Meter, ammount that the player has left [0, 100] (1 per block)
-        val inkMeter: Float = 100f,
+        var inkMeter: Float = 100f,
         // If the player is Local(true) or Remote(false)
         val currentPlayer: Boolean = false) {
 }

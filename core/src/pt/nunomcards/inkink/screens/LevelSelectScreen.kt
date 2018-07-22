@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import pt.nunomcards.inkink.assetloader.AudioAssets
+import pt.nunomcards.inkink.gamelogic.LevelGenerator
 import pt.nunomcards.inkink.model.GameMode
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.utils.UIFactory
@@ -48,7 +49,7 @@ class LevelSelectScreen : Screen {
         // LVL BUTTONS
         val side = w / 6
         var posX = w / 2 - side / 2 - w/3
-        var posY = titlePosY - side - h / 15
+        var posY = titlePosY - side - h / 10
         // ROW 1
         var lvlCounter = 1
         for(r in 1..2) {
@@ -57,9 +58,11 @@ class LevelSelectScreen : Screen {
                 val btnLvl = UIFactory.createImageButton(Texture(PATH_LVL + "lvl-sp-0$currLvl.png"))
                 btnLvl.setSize(side, side)
                 btnLvl.setPosition(posX, posY)
+                btnLvl.image.setFillParent(true)
                 btnLvl.addListener{ _ ->
-                    game.screen = LevelScreen(GameMode.SINGLEPLAYER, this.game, PaintColor.values()[currLvl])
+                    val lvlColor = PaintColor.values()[currLvl]
                     Vibration.vibrate()
+                    game.screen = LevelScreen(this.game, LevelGenerator.getLevel(lvlColor))
                     true
                  }
                 stage.addActor(btnLvl)

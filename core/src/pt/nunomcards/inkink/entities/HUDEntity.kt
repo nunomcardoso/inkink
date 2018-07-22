@@ -8,8 +8,9 @@ import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Stage
 import pt.nunomcards.inkink.gameinput.InputHandler
 import pt.nunomcards.inkink.gameinput.Movement
+import pt.nunomcards.inkink.gamelogic.LevelLogic
+import pt.nunomcards.inkink.utils.GdxUtils
 import pt.nunomcards.inkink.utils.UIFactory
-import pt.nunomcards.inkink.utils.Vibration
 
 /**
  * Created by nuno on 13/07/2018.
@@ -18,13 +19,15 @@ import pt.nunomcards.inkink.utils.Vibration
  * Head-Up Display (HUD)
  * "is the method by which information is visually relayed to the player as part of a game's user interface" - wikipedia
  */
-class HUDEntity(
-        val player: PlayerEntity,
+open class HUDEntity(
+        val level: LevelEntity,
+        logic: LevelLogic,
         batch: SpriteBatch,
         world: World,
         camera: OrthographicCamera
 ) : BaseEntity(batch, world, camera) {
 
+    val player: PlayerEntity = level.currentPlayer
     val stage: Stage
 
     // DPad Arrows
@@ -53,9 +56,8 @@ class HUDEntity(
      * EACH BUTTON MAKES THE CHARACTER MOVE
      */
     fun createDPad(){
-
-        val dpad_side = Gdx.graphics.width.toFloat()/5 / 3f
-        val borderOffset = Gdx.graphics.width/60
+        val dpad_side = GdxUtils.screenW/5 / 3f
+        val borderOffset = GdxUtils.screenW/60
 
         // BUTTON POSITION
         val r_posX = borderOffset + 2 * dpad_side

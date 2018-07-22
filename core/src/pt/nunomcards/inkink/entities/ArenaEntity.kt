@@ -1,5 +1,6 @@
 package pt.nunomcards.inkink.entities
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -8,7 +9,9 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.EdgeShape
 import com.badlogic.gdx.physics.box2d.World
+import pt.nunomcards.inkink.assetloader.LevelAssets
 import pt.nunomcards.inkink.model.Arena
+import pt.nunomcards.inkink.model.ObjectType
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.multiplayer.MultiplayerHandler
 import pt.nunomcards.inkink.utils.CartesianCoords
@@ -25,14 +28,14 @@ import pt.nunomcards.inkink.utils.IsometricCoords
  * RECTANGULAR ARENAS (rows!=cols) DOESNT WORK LIKE IT SHOULD
  */
 class ArenaEntity(
-        val rows: Int,
-        val cols: Int,
+        private val arena: Arena,
         batch: SpriteBatch,
         world: World,
         camera: OrthographicCamera
 ) : BaseEntity(batch, world, camera) {
 
-    private val arena = Arena(rows,cols)
+    private val rows = arena.rows
+    private val cols = arena.columns
     private val tile  = Texture("level/tile-flat.png")
     private val tileR = Texture("level/tile-flat-red.png")
     private val tileO = Texture("level/tile-flat-orange.png")
@@ -46,7 +49,7 @@ class ArenaEntity(
     val tileSizeW = screenW/rows * scaleFactor
     val tileSizeH = tileSizeW * (tile.height.toFloat() / tile.width.toFloat())
 
-    // Start point where the arena will be built
+    // Start point where the arenaEntity will be built
     val isoX = screenW/2 - tileSizeW/2
     val isoY = screenH - (screenH-rows*tileSizeH)/2 - tileSizeH*2
 
@@ -55,17 +58,14 @@ class ArenaEntity(
         renderArenaLimitationsBox2D()
     }
 
-    fun colorMap(color: PaintColor){
-        for(r in 0 until rows)
-            for(c in 0 until cols)
-                arena.map[r][c].color = color
-    }
-
+    var elapsed = 0f
     override fun render() {
+        elapsed += Gdx.graphics.deltaTime
+
         batch.begin()
 
         //
-        // RENDER
+        // RENDER Arena
         //
         for(r in 0 until rows){
             for(c in 0 until cols) {
@@ -79,6 +79,18 @@ class ArenaEntity(
             }
         }
 
+        //
+        // RENDER OBJECTS
+        //
+        for(o in arena.tileObjs){
+            val texture = when(o.obj){
+                ObjectType.CHEST_BOMB -> TextureRegion(LevelAssets.chest)
+                ObjectType.CHEST_CANNON -> TextureRegion(LevelAssets.chest)
+                ObjectType.FINAL_PLATFORM -> TextureRegion(LevelAssets.teleport)
+                ObjectType.COIN -> LevelAssets.coinAnim.getKeyFrame(elapsed, true) as TextureRegion
+            }
+            drawIsometric(o.isometricCoords.row ,o.isometricCoords.col, texture)
+        }
         batch.end()
     }
 
@@ -126,24 +138,24 @@ class ArenaEntity(
 
         tryUpdateMultiplayer(row,col,color)
     }
+
     private fun tryUpdateMultiplayer(row: Int, col: Int, color: PaintColor){
         MultiplayerHandler.paintTile(color, IsometricCoords(row,col))
     }
 
-    fun useBomb(row: Int, col: Int){
+    fun useBomb(row: Int, col: Int, color: PaintColor){
         val playerPosition = IsometricCoords(row,col)
-        arena.placeBombInk(playerPosition)
+        arena.placeBombInk(playerPosition, color)
     }
 
-    fun useCannon(row: Int, col: Int){
+    fun useCannon(row: Int, col: Int, color: PaintColor){
         val playerPosition = IsometricCoords(row,col)
-        arena.shootCannonInk(playerPosition)
+        arena.shootCannonInk(playerPosition, color)
     }
 
-    /*
-    //to draw textures on the arena
-    // works great DO NOT DELETE
-    fun drawIsometric(c: Int, r: Int, texture: Texture){
+    //
+    //to draw textures on the arenaEntity
+    private fun drawIsometric(r: Int, c: Int, texture: Texture){
         val txtW = tileSizeW / 2
         val txtH = txtW * (texture.height / texture.width)
         val coords = twoDtoIso(IsometricCoords(r,c))
@@ -155,7 +167,20 @@ class ArenaEntity(
                 coords.x, coords.y,
                 txtW, txtH
         )
-    } */
+    }
+    private fun drawIsometric(r: Int, c: Int, texture: TextureRegion){
+        val txtW = tileSizeW / 2
+        val txtH = txtW * (texture.regionHeight / texture.regionWidth)
+        val coords = twoDtoIso(IsometricCoords(r,c))
+
+        coords.x += txtW/2
+        coords.y += txtH/4 // so the sprite is centered
+        batch.draw(
+                texture,
+                coords.x, coords.y,
+                txtW, txtH
+        )
+    }
 
     // row and col start at 0
     // Vector2 is the bottom left corner of the rectangle that limits the tile
@@ -274,7 +299,7 @@ class ArenaEntity(
         convertedCoord.y = (coordsY * curMaxY / remoteMaxY).toInt()
 
         //
-        // SUM middle of arena
+        // SUM middle of arenaEntity
         val topTileY = isoY + tileSizeH/2
         val bottomTileY = isoY + tileSizeH/2 + tileSizeH*rows
 

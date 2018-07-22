@@ -15,23 +15,23 @@ import pt.nunomcards.inkink.model.PaintColor;
 
 public class PlayerAssetLoader {
 
-    private TextureRegion[] playerWhite=    new TextureRegion[4];
-    private TextureRegion[] playerRed=      new TextureRegion[4];
-    private TextureRegion[] playerOrange=   new TextureRegion[4];
-    private TextureRegion[] playerYellow=   new TextureRegion[4];
-    private TextureRegion[] playerGreen=    new TextureRegion[4];
-    private TextureRegion[] playerBlue=     new TextureRegion[4];
-    private TextureRegion[] playerPurple=   new TextureRegion[4];
+    public static TextureRegion[] playerWhite=    new TextureRegion[4];
+    public static TextureRegion[] playerRed=      new TextureRegion[4];
+    public static TextureRegion[] playerOrange=   new TextureRegion[4];
+    public static TextureRegion[] playerYellow=   new TextureRegion[4];
+    public static TextureRegion[] playerGreen=    new TextureRegion[4];
+    public static TextureRegion[] playerBlue=     new TextureRegion[4];
+    public static TextureRegion[] playerPurple=   new TextureRegion[4];
 
-    private Animation playerWhiteAnim;
-    private Animation playerRedAnim;
-    private Animation playerOrangeAnim;
-    private Animation playerYellowAnim;
-    private Animation playerGreenAnim;
-    private Animation playerBlueAnim;
-    private Animation playerPurpleAnim;
+    private static Animation playerWhiteAnim;
+    private static Animation playerRedAnim;
+    private static Animation playerOrangeAnim;
+    private static Animation playerYellowAnim;
+    private static Animation playerGreenAnim;
+    private static Animation playerBlueAnim;
+    private static Animation playerPurpleAnim;
 
-    public PlayerAssetLoader(){
+    static{
         Texture texturePlayers = new Texture("player_sprite.png");
         int step = 16; //pixels
         float frameDuration = 0.2f;
@@ -73,7 +73,7 @@ public class PlayerAssetLoader {
         playerPurpleAnim.setPlayMode( Animation.PlayMode.NORMAL);
     }
 
-    public TextureRegion getKeyFrameTexture(PaintColor color, float elapsed){
+    public static TextureRegion getKeyFrameTexture(PaintColor color, float elapsed){
         switch(color){
             case WHITE:
                 return (TextureRegion) playerWhiteAnim.getKeyFrame(elapsed, true);

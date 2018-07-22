@@ -2,15 +2,13 @@ package pt.nunomcards.inkink.screens
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.ScreenViewport
-import pt.nunomcards.inkink.assetloader.AudioAssets
+import pt.nunomcards.inkink.gamelogic.LevelGenerator
 import pt.nunomcards.inkink.model.GameMode
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.utils.UIFactory
@@ -57,17 +55,20 @@ class MultiplayerLobbyScreen : Screen {
         // LVL BUTTONS
         val side = w / 6
         var posX = w / 2 - side / 2 - w/3
-        var posY = titlePosY - side - h / 15
+        var posY = titlePosY - side - h / 8
         var counter = 0
         for(r in 1..2) {
             for(c in 1..3) {
                 val btnLvl = UIFactory.createImageButton(btnArr[counter])
                 btnLvl.setSize(side, side)
                 btnLvl.setPosition(posX, posY)
+                btnLvl.image.setFillParent(true)
                 val color = counter
                 btnLvl.addListener{ _ ->
                     Vibration.vibrate()
-                    game.screen = LevelScreen(GameMode.MULTIPLAYER, this.game, PaintColor.values()[color+1])
+                    // CHANGE SCREEN
+                    val lvlColor = PaintColor.values()[color+1]
+                    game.screen = LevelScreen(game, LevelGenerator.getMultiPlayerLevel(lvlColor))
                     true
                 }
                 stage.addActor(btnLvl)
