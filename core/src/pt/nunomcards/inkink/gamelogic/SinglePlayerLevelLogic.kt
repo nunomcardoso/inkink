@@ -71,8 +71,8 @@ class SinglePlayerLevelLogic(
             return
         }
 
-        if(paintTile())
-            tilesPainted++
+        paintTile()
+        countTilesLeft()
 
         // According to tile position is possible to do something different
         level.arena.tileObjs.forEach { tile ->
@@ -85,15 +85,25 @@ class SinglePlayerLevelLogic(
         }
     }
 
+    private fun countTilesLeft(){
+        var tiles = 0
+        for(r in 0 until level.arena.rows){
+            (0 until level.arena.columns)
+                    .filter { level.arena.map[r][it].color != PaintColor.WHITE }
+                    .forEach { tiles++ }
+        }
+        tilesPainted = maxTilesPainted - tiles
+    }
+
     private fun doAction(obj: ObjectType) {
         when(obj){
             ObjectType.CHEST_BOMB -> {
                 AudioAssets.chestOpenSound.play()
-                player.weapons.plus(Weapon(Weapon.WeaponType.BOMB, 3))
+                player.weapons.add(Weapon(Weapon.WeaponType.BOMB, 3))
             }
             ObjectType.CHEST_CANNON -> {
                 AudioAssets.chestOpenSound.play()
-                player.weapons.plus(Weapon(Weapon.WeaponType.CANNON, 3))
+                player.weapons.add(Weapon(Weapon.WeaponType.CANNON, 3))
             }
             ObjectType.FINAL_PLATFORM -> {
                 level.levelState = LevelState.ENDED

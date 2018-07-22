@@ -39,14 +39,6 @@ abstract class LevelEntity(
         players.forEach { e -> e.render() }
     }
 
-    fun useBomb(){
-        level.arena.placeBombInk(currentPlayer.player.coordsIso, currentPlayer.player.team)
-    }
-
-    fun useCannon(){
-        level.arena.shootCannonInk(currentPlayer.player.coordsIso, currentPlayer.player.team)
-    }
-
     override fun dispose() {
         arenaEntity.dispose()
         currentPlayer.dispose()

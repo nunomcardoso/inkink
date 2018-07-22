@@ -37,6 +37,38 @@ abstract class LevelLogic(
         return getAmmo(Weapon.WeaponType.CANNON)
     }
 
+    fun canUseBomb(): Boolean{
+        return try {
+            // first try to shoot
+            val w = level.currentPlayer.weapons.first { e -> e.weaponType == Weapon.WeaponType.BOMB }
+            if(w.ammoRemaining() <= 0){
+                return false
+            }
+            w.shoot()
+            // then update
+            level.arena.placeBombInk(level.currentPlayer.coordsIso, level.currentPlayer.team)
+            true
+        }catch (e: Exception){
+            false
+        }
+    }
+
+    fun canUseCannon(): Boolean{
+        return try {
+            // first try to shoot
+            val w = level.currentPlayer.weapons.first { e -> e.weaponType == Weapon.WeaponType.CANNON }
+            if(w.ammoRemaining() <= 0){
+                return false
+            }
+            w.shoot()
+            // then update
+            level.arena.shootCannonInk(level.currentPlayer.coordsIso, level.currentPlayer.team)
+            true
+        }catch (e: Exception){
+            false
+        }
+    }
+
     private fun getAmmo(w: Weapon.WeaponType): Int{
         return try {
             level.currentPlayer.weapons.first { e -> e.weaponType == w }.ammoRemaining()

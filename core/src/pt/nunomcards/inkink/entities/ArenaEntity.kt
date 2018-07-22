@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.EdgeShape
+import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.physics.box2d.World
 import pt.nunomcards.inkink.assetloader.LevelAssets
 import pt.nunomcards.inkink.model.Arena
@@ -15,6 +16,7 @@ import pt.nunomcards.inkink.model.ObjectType
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.multiplayer.MultiplayerHandler
 import pt.nunomcards.inkink.utils.CartesianCoords
+import pt.nunomcards.inkink.utils.GdxUtils
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.screenH
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.screenW
 import pt.nunomcards.inkink.utils.IsometricCoords
@@ -96,37 +98,24 @@ class ArenaEntity(
 
     // Just needs to be "rendered" 1 time
     private fun renderArenaLimitationsBox2D(){
-        // TODO: this measures are not perfect, work "fine" in 16:9 and 4:3 screens
-
-        // DIVIDIR por PPM
-        // Assim consegue-se melhores medidas e angulos
-
-        val cvpH  = camera.viewportHeight
-        val cvpW = camera.viewportWidth
-        //vertical offset
-        val offset = -1f
-        val limlength = cols*3
-
-        val coords = arrayOf(
-            // LEFT limits
-            Triple(Vector2(0f,cvpH/2+offset),
-                    Vector2(0f,0f), Vector2(1f*limlength,0.5f*limlength)),
-            Triple(Vector2(0f,cvpH/2+offset),
-                    Vector2(0f,0f), Vector2(1f*limlength,-0.5f*limlength)),
-            // RIGHT limits
-            Triple(Vector2(cvpW,cvpH/2+offset),
-                    Vector2(0f,0f), Vector2(-1f*limlength,-0.5f*limlength)),
-            Triple(Vector2(cvpW,cvpH/2+offset),
-                    Vector2(0f,0f), Vector2(-1f*limlength,0.5f*limlength))
+        // x, y to add, angle
+        val limits = arrayOf(
+                // TOP
+                Triple(isoX,isoY+tileSizeH,1f),
+                Triple(isoX+tileSizeW,isoY+tileSizeH,-1f),
+                // BOTTOM
+                Triple(isoX,isoY-tileSizeH*rows+tileSizeH/2,1f),
+                Triple(isoX+tileSizeW,isoY-tileSizeH*rows+tileSizeH/2,-1f)
         )
-
-        for(cd in coords) {
-            val limits = BodyDef()
-            limits.position.set(cd.first)
-            val limitBody = world.createBody(limits)
-            val limitBox = EdgeShape()
-            limitBox.set(cd.second, cd.third)
-            limitBody.createFixture(limitBox, 0.0f)
+        for(c in limits)
+        {
+            val groundBodyDef = BodyDef()
+            groundBodyDef.position.set(Vector2(0f,0f))
+            val groundBody = world.createBody(groundBodyDef)
+            groundBody.setTransform(Vector2(c.first/GdxUtils.PPM, c.second/GdxUtils.PPM), Math.toRadians(26.6*c.third).toFloat())
+            val groundBox = PolygonShape()
+            groundBox.setAsBox(camera.viewportWidth, .5f)
+            groundBody.createFixture(groundBox, 0.0f)
         }
     }
 

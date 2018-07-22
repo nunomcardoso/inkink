@@ -9,10 +9,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.physics.box2d.World
 import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.assetloader.LevelAssets
-import pt.nunomcards.inkink.gamelogic.LevelLogic
 import pt.nunomcards.inkink.gamelogic.SinglePlayerLevelLogic
 import pt.nunomcards.inkink.utils.GdxUtils
 import pt.nunomcards.inkink.utils.UIFactory
+import pt.nunomcards.inkink.utils.Vibration
 
 /**
  * Created by nuno on 21/07/2018.
@@ -40,6 +40,8 @@ class HUDSinglePlayerEntity(
         createWeaponButtons()
     }
 
+    var lastimePressedBomb = System.currentTimeMillis()
+    var lastimePressedCannon = System.currentTimeMillis()
     private fun createWeaponButtons() {
         val dpad_side = GdxUtils.screenW/5 / 3f
         val borderOffset = GdxUtils.screenW/60
@@ -54,10 +56,11 @@ class HUDSinglePlayerEntity(
         bombBtn.image.setFillParent(true)
         bombBtn.setPosition(bomb_posX, bomb_posY)
         bombBtn.addListener { _ ->
-            if(logic.getBombAmmo() > 0){
+            if(System.currentTimeMillis() > lastimePressedBomb+500 && logic.canUseBomb() ){
+                lastimePressedBomb = System.currentTimeMillis()
                 // AUDIO
                 AudioAssets.bombSound.play()
-                level.useBomb()
+                Gdx.input.vibrate(longArrayOf(300, 50, 50, 300),-1)
             }
             true
         }
@@ -69,10 +72,11 @@ class HUDSinglePlayerEntity(
         cannonBtn.image.setFillParent(true)
         cannonBtn.setPosition(bomb_posX-dpad_side*2.1f, bomb_posY)
         cannonBtn.addListener { _ ->
-            if(logic.getCannonAmmo() > 0){
+            if(System.currentTimeMillis() > lastimePressedCannon+500 && logic.canUseCannon()){
+                lastimePressedCannon = System.currentTimeMillis()
                 // AUDIO
                 AudioAssets.cannonSound.play()
-                level.useCannon()
+                Gdx.input.vibrate(longArrayOf(150, 0, 0, 150),-1)
             }
             true
         }
@@ -82,7 +86,7 @@ class HUDSinglePlayerEntity(
 
     private var elapsed = 0f
     override fun render() {
-        // PARENT RENDDER
+        // PARENT RENDER
         super.render()
 
         elapsed+= Gdx.graphics.deltaTime

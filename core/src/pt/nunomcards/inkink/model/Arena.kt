@@ -37,7 +37,25 @@ class Arena (
      *          . . . . .
      */
     fun placeBombInk(playerPosition: IsometricCoords, color: PaintColor){
+        val c = playerPosition.col
+        val r = playerPosition.row
 
+        val coords = arrayOf(
+                IsometricCoords(r,c+1),
+                IsometricCoords(r,c-1),
+                IsometricCoords(r+1,c+1),
+                IsometricCoords(r-1,c-1),
+                IsometricCoords(r+1,c-1),
+                IsometricCoords(r-1,c+1),
+                IsometricCoords(r+1,c),
+                IsometricCoords(r-1,c)
+        )
+
+        for(p in coords){
+            try{
+                map[p.row][p.col].color  = color
+            } catch (e: Exception){/* continue */}
+        }
     }
 
     /**
@@ -52,6 +70,24 @@ class Arena (
      *          . . * . .
      */
     fun shootCannonInk(playerPosition: IsometricCoords, color: PaintColor){
+        val c = playerPosition.col
+        val r = playerPosition.row
 
+        val coords = arrayOf(
+                IsometricCoords(r-1,c),
+                IsometricCoords(r-2,c),
+                IsometricCoords(r+1,c),
+                IsometricCoords(r+2,c),
+                IsometricCoords(r,c-1),
+                IsometricCoords(r,c-2),
+                IsometricCoords(r,c+1),
+                IsometricCoords(r,c+2)
+        )
+
+        for(p in coords){
+            try{
+                map[p.row][p.col].color  = color
+            } catch (e: Exception){/* continue */}
+        }
     }
 }

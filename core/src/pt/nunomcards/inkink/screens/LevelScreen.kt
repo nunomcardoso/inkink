@@ -69,7 +69,6 @@ class LevelScreen : Screen {
         backbutton.addListener { _ ->
             // AUDIO
             AudioAssets.selectSound.play()
-
             if(level.gameMode == GameMode.SINGLEPLAYER){
                 AudioAssets.spLevelMusic.stop()
                 game.screen= LevelSelectScreen(game)

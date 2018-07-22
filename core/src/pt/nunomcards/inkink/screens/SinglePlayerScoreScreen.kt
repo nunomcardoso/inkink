@@ -61,7 +61,7 @@ class SinglePlayerScoreScreen : Screen {
         // BACK BUTTON
         val backbutton = UIFactory.createImageButton(button_back)
         backbutton.setSize(side, button_back.height*side/button_back.width)
-        backbutton.setPosition(GdxUtils.screenW/60,GdxUtils.screenW/60)
+        backbutton.setPosition(GdxUtils.screenW/2-side/2,GdxUtils.screenW/60)
         backbutton.addListener { _ ->
             // AUDIO
             AudioAssets.selectSound.play()
