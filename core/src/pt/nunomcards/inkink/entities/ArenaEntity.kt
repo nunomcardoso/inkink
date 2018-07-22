@@ -51,7 +51,7 @@ class ArenaEntity(
 
     // Start point where the arenaEntity will be built
     val isoX = screenW/2 - tileSizeW/2
-    val isoY = screenH - (screenH-rows*tileSizeH)/2 - tileSizeH*2
+    val isoY = screenH/2 + tileSizeH*rows/2 - tileSizeH*1.5f
 
     init{
         // Box 2D Limits

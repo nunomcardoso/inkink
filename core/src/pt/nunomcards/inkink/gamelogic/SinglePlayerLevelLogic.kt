@@ -1,6 +1,7 @@
 package pt.nunomcards.inkink.gamelogic
 
 import com.badlogic.gdx.Game
+import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.model.*
 import pt.nunomcards.inkink.screens.SinglePlayerScoreScreen
 
@@ -53,6 +54,9 @@ class SinglePlayerLevelLogic(
 
     override fun update() {
         if(level.levelState == LevelState.ENDED) {
+            // AUDIO
+            AudioAssets.spLevelMusic.stop()
+            AudioAssets.endLevel.play()
             game.screen = SinglePlayerScoreScreen(
                     game,
                     Pair(coins,maxCoins),
@@ -84,15 +88,18 @@ class SinglePlayerLevelLogic(
     private fun doAction(obj: ObjectType) {
         when(obj){
             ObjectType.CHEST_BOMB -> {
+                AudioAssets.chestOpenSound.play()
                 player.weapons.plus(Weapon(Weapon.WeaponType.BOMB, 3))
             }
             ObjectType.CHEST_CANNON -> {
+                AudioAssets.chestOpenSound.play()
                 player.weapons.plus(Weapon(Weapon.WeaponType.CANNON, 3))
             }
             ObjectType.FINAL_PLATFORM -> {
                 level.levelState = LevelState.ENDED
             }
             ObjectType.COIN -> {
+                AudioAssets.coinSound.play()
                 coins++
             }
         }

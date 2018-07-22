@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.physics.box2d.*
+import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.entities.LevelManagerEntity
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.model.GameMode
@@ -66,10 +67,17 @@ class LevelScreen : Screen {
         backbutton.setSize(side, button_back.height*side/button_back.width)
         backbutton.setPosition(w-side,h-w/20)
         backbutton.addListener { _ ->
-            if(level.gameMode == GameMode.SINGLEPLAYER)
+            // AUDIO
+            AudioAssets.selectSound.play()
+
+            if(level.gameMode == GameMode.SINGLEPLAYER){
+                AudioAssets.spLevelMusic.stop()
                 game.screen= LevelSelectScreen(game)
-            if(level.gameMode == GameMode.MULTIPLAYER)
+            }
+            if(level.gameMode == GameMode.MULTIPLAYER){
+                AudioAssets.mpLevelMusic.stop()
                 game.screen= MultiplayerLobbyScreen(game)
+            }
             Vibration.vibrate()
             true
         }

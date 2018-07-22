@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.physics.box2d.World
+import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.assetloader.LevelAssets
 import pt.nunomcards.inkink.gamelogic.LevelLogic
 import pt.nunomcards.inkink.gamelogic.SinglePlayerLevelLogic
@@ -53,6 +54,11 @@ class HUDSinglePlayerEntity(
         bombBtn.image.setFillParent(true)
         bombBtn.setPosition(bomb_posX, bomb_posY)
         bombBtn.addListener { _ ->
+            if(logic.getBombAmmo() > 0){
+                // AUDIO
+                AudioAssets.bombSound.play()
+                level.useBomb()
+            }
             true
         }
         stage.addActor(bombBtn)
@@ -63,6 +69,11 @@ class HUDSinglePlayerEntity(
         cannonBtn.image.setFillParent(true)
         cannonBtn.setPosition(bomb_posX-dpad_side*2.1f, bomb_posY)
         cannonBtn.addListener { _ ->
+            if(logic.getCannonAmmo() > 0){
+                // AUDIO
+                AudioAssets.cannonSound.play()
+                level.useCannon()
+            }
             true
         }
         stage.addActor(cannonBtn)
@@ -91,7 +102,7 @@ class HUDSinglePlayerEntity(
         val percentTiles = (tiles.toFloat()/maxTiles.toFloat())*100
         val f = font.draw(batch,"$coins/$maxCoins\n${percentTiles.toInt()}%", GdxUtils.screenW/20, GdxUtils.screenH)
         val sizeIconH = f.height/2*.9f
-        val sizeIconW = sizeIconH //* (pl.width/pl.height)
+        val sizeIconW = sizeIconH
         // coin icon
         batch.draw(
                 LevelAssets.coinAnim.getKeyFrame(elapsed, true) as TextureRegion,

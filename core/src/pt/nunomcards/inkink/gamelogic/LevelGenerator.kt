@@ -20,17 +20,17 @@ object LevelGenerator {
      *      F - Final point (To complete the level)
      *      * - Paint
      *      C - Coin
-     *      B - Chest (BOMB)
+     *      X - Chest (BOMB)
      *      K - Chest (CANNON)
      */
     fun getLevel(color: PaintColor): Level{
         return when(color){
             PaintColor.RED -> levelOne(color)
-            //PaintColor.ORANGE -> levelTwo(color)
-            //PaintColor.YELLOW -> levelThree(color)
-            //PaintColor.GREEN -> levelOne(color)
-            //PaintColor.BLUE -> levelTwo(color)
-            //PaintColor.PURPLE -> levelThree(color)
+            PaintColor.ORANGE -> levelTwo(color)
+            PaintColor.YELLOW -> levelThree(color)
+            PaintColor.GREEN -> levelOne(color)
+            PaintColor.BLUE -> levelTwo(color)
+            PaintColor.PURPLE -> levelThree(color)
 
             else -> levelOne(color)
         }
@@ -60,7 +60,7 @@ object LevelGenerator {
      */
     private fun levelOne(color: PaintColor): Level {
         val initCoords = IsometricCoords(0,0)
-        val arena = Arena(7,7)
+        val arena = Arena(4,4)
         val tileObjs: LinkedList<TileObject> = arena.tileObjs
 
         // COINS
@@ -69,7 +69,7 @@ object LevelGenerator {
         tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(3,3)))
 
         // FINAL PLATFORM
-        tileObjs.add(TileObject(ObjectType.FINAL_PLATFORM, IsometricCoords(4,3)))
+        tileObjs.add(TileObject(ObjectType.FINAL_PLATFORM, IsometricCoords(3,2)))
 
         // COLORED TILES
         arena.map[0][2].color = color
@@ -90,7 +90,7 @@ object LevelGenerator {
      *  ├───┼───┼───┼───┼───┼───┼───┤
      *  │ * │ * │   |   |   | * |   |
      *  ├───┼───┼───┼───┼───┼───┼───┤
-     *  │   │   │ I |   | * | C | C |
+     *  │   │   │ B |   | * | C | C |
      *  ├───┼───┼───┼───┼───┼───┼───┤
      *  │   │ * │   |   |   | * |   |
      *  ├───┼───┼───┼───┼───┼───┼───┤
@@ -102,9 +102,37 @@ object LevelGenerator {
      *  └───┴───┴───┴───┴───┴───┴───┘ (7,7)
      */
     private fun levelTwo(color: PaintColor): Level {
-        val initCoords = IsometricCoords(0,0)
+        val initCoords = IsometricCoords(2,2)
         val arena = Arena(7,7)
         val tileObjs: LinkedList<TileObject> = arena.tileObjs
+
+        // COINS
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(0,0)))
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(0,6)))
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(2,6)))
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(2,5)))
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(4,0)))
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(5,0)))
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(5,4)))
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(6,4)))
+
+        // FINAL PLATFORM
+        tileObjs.add(TileObject(ObjectType.FINAL_PLATFORM, IsometricCoords(5,5)))
+
+        // COLORED TILES
+        arena.map[0][1].color = color
+        arena.map[0][4].color = color
+        arena.map[1][1].color = color
+        arena.map[1][0].color = color
+        arena.map[1][5].color = color
+        arena.map[2][4].color = color
+        arena.map[3][1].color = color
+        arena.map[3][5].color = color
+        arena.map[4][2].color = color
+        arena.map[5][1].color = color
+        arena.map[6][1].color = color
+        arena.map[6][5].color = color
+        arena.map[6][6].color = color
 
         val player = Player("-", color)
         return Level(initCoords,arena,player)
@@ -114,7 +142,7 @@ object LevelGenerator {
      *  LEVEL YELLOW / PURPLE
      *  (0,0)
      *  ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-     *  │ I │ B │ * | * | * | * | * | * | K | C |
+     *  │ B │ X │ * | * | * | * | * | * | K | C |
      *  ├───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
      *  │ * │ * │ * | * | * | * | * | * | * | * |
      *  ├───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
@@ -139,6 +167,19 @@ object LevelGenerator {
         val initCoords = IsometricCoords(0,0)
         val arena = Arena(10,10)
         val tileObjs: LinkedList<TileObject> = arena.tileObjs
+
+        arena.paintAllMap(color)
+
+        // COINS
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(9,0)))
+        tileObjs.add(TileObject(ObjectType.COIN, IsometricCoords(0,9)))
+
+        // POWER UPs
+        tileObjs.add(TileObject(ObjectType.CHEST_BOMB, IsometricCoords(0,1)))
+        tileObjs.add(TileObject(ObjectType.CHEST_CANNON, IsometricCoords(0,8)))
+
+        // FINAL PLATFORM
+        tileObjs.add(TileObject(ObjectType.FINAL_PLATFORM, IsometricCoords(9,9)))
 
         val player = Player("-", color)
         return Level(initCoords,arena,player)

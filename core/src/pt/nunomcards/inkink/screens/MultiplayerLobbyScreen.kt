@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.ScreenViewport
+import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.gamelogic.LevelGenerator
 import pt.nunomcards.inkink.model.GameMode
 import pt.nunomcards.inkink.model.PaintColor
@@ -87,6 +88,9 @@ class MultiplayerLobbyScreen : Screen {
         backbutton.setSize(side, button_back.height*side/button_back.width)
         backbutton.setPosition(w/60,w/60)
         backbutton.addListener { _ ->
+            // AUDIO
+            AudioAssets.selectSound.play()
+
             Vibration.vibrate()
             game.screen= MainMenuScreen(game)
             true

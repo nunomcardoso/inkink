@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.physics.box2d.World
+import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.gamelogic.LevelLogic
 import pt.nunomcards.inkink.gamelogic.MultiPlayerLevelLogic
 import pt.nunomcards.inkink.gamelogic.SinglePlayerLevelLogic
@@ -28,8 +29,13 @@ class LevelManagerEntity(
     private val hud: HUDEntity
 
     init {
+        AudioAssets.mainScreenMusic.stop()
+
         when(level.gameMode){
             GameMode.SINGLEPLAYER -> {
+                // AUDIO
+                AudioAssets.spLevelMusic.play()
+
                 level.currentPlayer.team = PaintColor.WHITE
                 // Game Logic
                 logic = SinglePlayerLevelLogic(game, level)
@@ -39,6 +45,9 @@ class LevelManagerEntity(
                 hud = HUDSinglePlayerEntity(levelEntity, logic, batch, world, camera)
             }
             GameMode.MULTIPLAYER -> {
+                // AUDIO
+                AudioAssets.mpLevelMusic.play()
+
                 // Game Logic
                 logic = MultiPlayerLevelLogic(game, level)
                 // Level Entity

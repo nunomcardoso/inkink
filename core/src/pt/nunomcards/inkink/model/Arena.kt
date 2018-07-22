@@ -18,6 +18,13 @@ class Arena (
     // coins, crates and warp points
     val tileObjs: LinkedList<TileObject> = LinkedList()
 
+    fun paintAllMap(color: PaintColor){
+        for(r in 0 until rows){
+            for(c in 0 until columns)
+                map[r][c].color = color
+        }
+    }
+
     /**
      *      |   BOMB   |
      * "X" is the (row, col) position

@@ -41,6 +41,8 @@ class MainMenuScreen : Screen {
         stage = Stage(ScreenViewport(), batch)
         Gdx.input.inputProcessor = stage
         createUI()
+
+        AudioAssets.mainScreenMusic.play()
     }
 
     // DIMENSIONS
@@ -68,15 +70,35 @@ class MainMenuScreen : Screen {
         stage.addActor(root)
 
         val buttonPlay = UIFactory.createImageButton(buttonPlayActive, buttonPlayInactive)
+        var clickedSP = false
         buttonPlay.setSize(buttonplayW,buttonplayH)
         buttonPlay.setPosition(buttonplayPosX,buttonplayPosY)
-        buttonPlay.addListener { _ -> game.screen=LevelSelectScreen(game); Vibration.vibrate(); true }
+        buttonPlay.addListener { _ ->
+            if(!clickedSP) {
+                // AUDIO
+                AudioAssets.selectSound.play()
+                game.screen=LevelSelectScreen(game)
+                Vibration.vibrate()
+                clickedSP = true
+            }
+            true
+        }
         stage.addActor(buttonPlay)
 
         val buttonMP = UIFactory.createImageButton(buttonMultiplayerActive, buttonMultiplayerInactive)
+        var clickedMP = false
         buttonMP.setSize(buttonmpW, buttonmpH)
         buttonMP.setPosition(buttonmpPosX,buttonmpPosY)
-        buttonMP.addListener { _ -> game.screen=MultiplayerLobbyScreen(game); Vibration.vibrate(); true }
+        buttonMP.addListener { _ ->
+            if(!clickedMP) {
+                // AUDIO
+                AudioAssets.selectSound.play()
+                game.screen = MultiplayerLobbyScreen(game)
+                Vibration.vibrate()
+                clickedMP = true
+            }
+            true
+        }
         stage.addActor(buttonMP)
     }
 

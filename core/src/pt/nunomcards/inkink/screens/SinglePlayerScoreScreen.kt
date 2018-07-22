@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ScreenViewport
+import pt.nunomcards.inkink.assetloader.AudioAssets
 import pt.nunomcards.inkink.assetloader.LevelAssets
 import pt.nunomcards.inkink.utils.GdxUtils
 import pt.nunomcards.inkink.utils.UIFactory
@@ -49,6 +50,9 @@ class SinglePlayerScoreScreen : Screen {
         stage = Stage(ScreenViewport(), batch)
         Gdx.input.inputProcessor = stage
         createUI()
+
+        // AUDIO
+        AudioAssets.endLevel.play()
     }
 
     fun createUI() {
@@ -59,6 +63,9 @@ class SinglePlayerScoreScreen : Screen {
         backbutton.setSize(side, button_back.height*side/button_back.width)
         backbutton.setPosition(GdxUtils.screenW/60,GdxUtils.screenW/60)
         backbutton.addListener { _ ->
+            // AUDIO
+            AudioAssets.selectSound.play()
+
             Vibration.vibrate()
             game.screen= MainMenuScreen(game)
             true
