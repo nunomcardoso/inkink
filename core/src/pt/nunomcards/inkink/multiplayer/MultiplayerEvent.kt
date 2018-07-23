@@ -11,4 +11,9 @@ enum class MultiplayerEvent(val value: String) {
     PLAYER_DISCONNECT("playerDisconnected"),
     GET_PLAYERS("getPlayers"),
     NEW_PLAYER("newPlayer"),
+    WEAPON_USED("weaponUsed"),
+    GET_BOARD("getBoard"),
+    INIT_TIMER("getInitTime"),
+    START_GAME("startGame"),
+    END_GAME("endGame"),
 }

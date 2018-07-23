@@ -26,7 +26,7 @@ class PlayerEntity(
         camera: OrthographicCamera
 ) : BaseEntity(batch, world, camera) {
 
-    private val playerTexture = TextureRegion(Texture("player.png"))
+    private val playerTexture = PlayerAssetLoader.player
     lateinit var body: Body
 
     private val txtW: Float
@@ -41,7 +41,6 @@ class PlayerEntity(
     private var elapsed = 0f
     override fun render() {
         updatePlayerLocation()
-        tryUpdateMultiplayer()
 
         elapsed+= Gdx.graphics.deltaTime
         batch.begin()
@@ -60,7 +59,7 @@ class PlayerEntity(
         // only current player should do this
         // in multiplayer the entities should not paint by their coords,
         // the server must tell witch tiles to color
-        if(player.currentPlayer)
+        if(player.hasMoved() && player.currentPlayer)
             arena.colorTile(player.coordsIso.row, player.coordsIso.col, player.team)
     }
 
@@ -116,10 +115,7 @@ class PlayerEntity(
         body = boddy
     }
 
-    private val previousPosition = CartesianCoords(player.coordsCart.x, player.coordsCart.y)
-    fun updatePlayerLocation(): Boolean{
-        //if(!hasMoved()) return false
-
+    private fun updatePlayerLocation(): Boolean{
         val shapeRadius = arena.tileSizeW / 4
 
         val bodyX = body.position.x * PPM
@@ -139,23 +135,11 @@ class PlayerEntity(
         return true
     }
 
-    // CHECKS IF PLAYER HAS MOVED
-    // CHANGE TO ISOMETRIC
-    private fun hasMoved(): Boolean{
-        if(previousPosition.x != player.coordsCart.x || previousPosition.y != player.coordsCart.x){
-            // update prev.
-            previousPosition.x = player.coordsCart.x
-            previousPosition.y = player.coordsCart.y
-            return true
-        }
-        return false
-    }
-
-    fun tryUpdateMultiplayer(){
-        MultiplayerHandler.moveCurrentPlayer(player.id, player.coordsCart)
-    }
-
     override fun dispose(){
 
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return player.equals(other)
     }
 }

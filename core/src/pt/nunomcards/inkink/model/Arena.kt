@@ -13,7 +13,7 @@ class Arena (
 ) {
 
     // creates the bi-dimensional array
-    val map: Array<Array<Tile>> = Array(rows, {Array(columns, {Tile()})})
+    var map: Array<Array<Tile>> = Array(rows, {Array(columns, {Tile()})})
 
     // coins, crates and warp points
     val tileObjs: LinkedList<TileObject> = LinkedList()
@@ -89,5 +89,12 @@ class Arena (
                 map[p.row][p.col].color  = color
             } catch (e: Exception){/* continue */}
         }
+    }
+
+    /**
+     * From remote
+     */
+    fun createFromRemote(remoteMap: Array<Array<Tile>>){
+        map = remoteMap
     }
 }

@@ -125,11 +125,6 @@ class ArenaEntity(
             return
         arena.map[row][col].color = color
 
-        tryUpdateMultiplayer(row,col,color)
-    }
-
-    private fun tryUpdateMultiplayer(row: Int, col: Int, color: PaintColor){
-        MultiplayerHandler.paintTile(color, IsometricCoords(row,col))
     }
 
     fun useBomb(row: Int, col: Int, color: PaintColor){

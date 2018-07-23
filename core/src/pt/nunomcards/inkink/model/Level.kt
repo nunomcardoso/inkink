@@ -9,7 +9,7 @@ class Level(
         val playerInitCoords: IsometricCoords,
         val arena: Arena,
         val currentPlayer: Player,
-        val playerList: List<Player>? = null,
+        var playerList: HashSet<Player> = HashSet(),
         val gameMode: GameMode = GameMode.SINGLEPLAYER,
         val timeToComplete: Int = 30,
         var levelState: LevelState = LevelState.STARTED

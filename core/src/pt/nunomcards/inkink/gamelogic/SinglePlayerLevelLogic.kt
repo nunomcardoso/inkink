@@ -116,6 +116,6 @@ class SinglePlayerLevelLogic(
     }
 
     fun getTimer(): String{
-        return ((System.currentTimeMillis() - initTime)/1000).toString()
+        return (level.timeToComplete-(System.currentTimeMillis() - initTime)/1000).toString()
     }
 }

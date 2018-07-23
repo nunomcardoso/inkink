@@ -15,6 +15,7 @@ import pt.nunomcards.inkink.entities.LevelManagerEntity
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.model.GameMode
 import pt.nunomcards.inkink.model.Level
+import pt.nunomcards.inkink.multiplayer.MultiplayerHandler
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.BOX_POSITION_ITERATIONS
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.BOX_STEP
 import pt.nunomcards.inkink.utils.GdxUtils.Companion.BOX_VELOCITY_ITERATIONS
@@ -67,6 +68,8 @@ class LevelScreen : Screen {
         backbutton.setSize(side, button_back.height*side/button_back.width)
         backbutton.setPosition(w-side,h-w/20)
         backbutton.addListener { _ ->
+            if(level.gameMode == GameMode.MULTIPLAYER)
+                MultiplayerHandler.end()
             // AUDIO
             AudioAssets.selectSound.play()
             if(level.gameMode == GameMode.SINGLEPLAYER){
@@ -104,7 +107,7 @@ class LevelScreen : Screen {
         // LEVEL RENDER
         levelManager.render()
 
-        debugRenderer.render(world, camera.combined)
+        //debugRenderer.render(world, camera.combined)
 
         stage.act(Gdx.graphics.rawDeltaTime)
         stage.draw()

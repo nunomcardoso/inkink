@@ -60,6 +60,7 @@ class LevelSelectScreen : Screen {
                 btnLvl.setPosition(posX, posY)
                 btnLvl.image.setFillParent(true)
                 btnLvl.addListener{ _ ->
+                    // AUDIO
                     AudioAssets.selectSound.play()
                     Vibration.vibrate()
                     val lvlColor = PaintColor.values()[currLvl]
@@ -82,6 +83,7 @@ class LevelSelectScreen : Screen {
         backbutton.setSize(side, button_back.height*side/button_back.width)
         backbutton.setPosition(w/60,w/60)
         backbutton.addListener { _ ->
+            // AUDIO
             AudioAssets.selectSound.play()
             Vibration.vibrate()
             game.screen= MainMenuScreen(game)

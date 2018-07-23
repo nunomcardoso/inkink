@@ -24,6 +24,7 @@ class LevelManagerEntity(
         level: Level
 ) : BaseEntity(batch, world, camera) {
 
+    private val ip = "194.210.190.29:8080"
     private val levelEntity: LevelEntity
     private val logic: LevelLogic
     private val hud: HUDEntity
@@ -55,7 +56,8 @@ class LevelManagerEntity(
                 // HUD
                 hud = HUDMultiPlayerEntity(levelEntity, logic, batch, world, camera)
 
-                MultiplayerHandler.init(levelEntity)
+                MultiplayerHandler.init(logic, levelEntity, ip)
+                MultiplayerHandler.startGame()
             }
         }
     }

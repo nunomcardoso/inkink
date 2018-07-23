@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.physics.box2d.World
 import pt.nunomcards.inkink.model.Level
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by nuno on 13/07/2018.
@@ -19,7 +20,7 @@ abstract class LevelEntity(
     val arenaEntity: ArenaEntity
     val currentPlayer: PlayerEntity
 
-    val players: ArrayList<PlayerEntity> = ArrayList()
+    val players: ConcurrentHashMap<String, PlayerEntity> = ConcurrentHashMap()
     val tileobj: ArrayList<TileObjectEntity> = ArrayList()
 
     init {
@@ -36,12 +37,14 @@ abstract class LevelEntity(
 
         // DRAW Players
         currentPlayer.render()
-        players.forEach { e -> e.render() }
+        players.forEach { (k,v) ->
+            v.render()
+        }
     }
 
     override fun dispose() {
         arenaEntity.dispose()
         currentPlayer.dispose()
-        players.forEach { e -> e.dispose() }
+        players.forEach { (k,v) -> v.dispose() }
     }
 }

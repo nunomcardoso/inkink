@@ -3,10 +3,15 @@ package pt.nunomcards.inkink.multiplayer
 import io.socket.client.IO
 import io.socket.client.Socket
 import com.badlogic.gdx.Gdx
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import pt.nunomcards.inkink.entities.MultiPlayerLevelEntity
+import pt.nunomcards.inkink.gamelogic.MultiPlayerLevelLogic
 import pt.nunomcards.inkink.model.PaintColor
+import pt.nunomcards.inkink.model.Player
+import pt.nunomcards.inkink.model.Tile
+import pt.nunomcards.inkink.model.Weapon
 import pt.nunomcards.inkink.utils.CartesianCoords
 import pt.nunomcards.inkink.utils.IsometricCoords
 
@@ -20,17 +25,20 @@ object MultiplayerHandler{
     private var socketid: String? = null
 
     private lateinit var level: MultiPlayerLevelEntity
+    private lateinit var logic: MultiPlayerLevelLogic
 
     // To check if game mode is multiplayer
-    var isGameModeMultiplayer: Boolean = false
+    private var isGameModeMultiplayer: Boolean = false
 
-    fun init(level: MultiPlayerLevelEntity) {
+    // INIT
+    fun init(logic: MultiPlayerLevelLogic, level: MultiPlayerLevelEntity, ip: String) {
         isGameModeMultiplayer = true
 
         this.level = level
+        this.logic = logic
 
         try {
-            socket = IO.socket("http://194.210.190.29:8080")
+            socket = IO.socket("http://$ip")
             socket.connect()
 
             configSocketEvents()
@@ -39,22 +47,21 @@ object MultiplayerHandler{
         }
     }
 
+    // END
     fun end(){
         socket.disconnect()
+        isGameModeMultiplayer = false
     }
 
     // PLAYER MOVED
-    fun moveCurrentPlayer(id: String, coords: CartesianCoords){
-        return;
+    fun moveCurrentPlayer(id: String, coords: IsometricCoords){
         if(!isGameModeMultiplayer) return
 
         val data = JSONObject()
         try {
-            val convCoords = level.arenaEntity.convertToRemoteCoords(coords)
             data.put("id", id)
-            data.put("x", convCoords.first)
-            data.put("y", convCoords.second)
-            data.put("tileH", convCoords.third)
+            data.put("row", coords.row)
+            data.put("col", coords.col)
 
             socket.emit(MultiplayerEvent.PLAYER_MOVED.value, data)
         } catch (e: JSONException) {
@@ -64,23 +71,31 @@ object MultiplayerHandler{
 
     // ADD PLAYER
     private fun addCurrentPlayer(){
-        return;
         if(!isGameModeMultiplayer) return
 
-        val data = JSONObject()
         val curPlayer = level.currentPlayer.player
+
+        val data = JSONObject()
         try {
-            val convCoords = level.arenaEntity.convertToRemoteCoords(curPlayer.coordsCart)
-            data.put("id", curPlayer.id)
+            data.put("id", socketid)
             data.put("color", curPlayer.team.name)
-            data.put("x", convCoords.first)
-            data.put("y", convCoords.second)
-            data.put("tileH", convCoords.third)
+            data.put("row", curPlayer.coordsIso.row)
+            data.put("col", curPlayer.coordsIso.col)
 
             socket.emit(MultiplayerEvent.ADD_CURRENT_PLAYER.value, data)
         } catch (e: JSONException) {
             println(e.message)
         }
+    }
+    // START GAME
+    fun startGame(){
+        if(!isGameModeMultiplayer) return
+        socket.emit(MultiplayerEvent.START_GAME.value, "")
+    }
+    // END GAME
+    fun endGame(){
+        if(!isGameModeMultiplayer) return
+        socket.emit(MultiplayerEvent.END_GAME.value, "")
     }
 
     // PAINT TILE
@@ -89,10 +104,27 @@ object MultiplayerHandler{
 
         val data = JSONObject()
         try {
-            data.put("color", color.name)
+            data.put("color", color.ordinal)
             data.put("row", coords.row)
             data.put("col", coords.col)
             socket.emit(MultiplayerEvent.PAINTED_TILE.value, data)
+        } catch (e: JSONException) {
+            println(e.message)
+        }
+    }
+
+    // USE WEAPON
+    fun useWeapon(color: PaintColor, coords: IsometricCoords, weaponType: Weapon.WeaponType){
+        if(!isGameModeMultiplayer) return
+
+        val data = JSONObject()
+        try {
+            data.put("color", color.ordinal)
+            data.put("row", coords.row)
+            data.put("col", coords.col)
+            data.put("weapon", weaponType.ordinal)
+
+            socket.emit(MultiplayerEvent.WEAPON_USED.value, data)
         } catch (e: JSONException) {
             println(e.message)
         }
@@ -106,7 +138,6 @@ object MultiplayerHandler{
          */
         .on(Socket.EVENT_CONNECT) {
             Gdx.app.log("SocketIO", "Connected")
-            println(socket.id())
         //}
         ///**
         // *  SOCKET ID
@@ -130,47 +161,87 @@ object MultiplayerHandler{
             }
         }
         /**
+        *  GET BOARD
+        */
+        .on(MultiplayerEvent.GET_BOARD.value) { args ->
+            Gdx.app.log("SocketIO", "Getting Board")
+
+            val data = args[0] as JSONArray // exception
+            try {
+                var map: Array<Array<Tile>> = Array(10, {Array(10, { Tile() })})
+
+                for (i in 0 until data.length()) {
+                    val r = data[i] as JSONArray
+                    for(j in 0 until r.length()){
+                        val color = r.optInt(j)
+                        map[i][j].color = PaintColor.values()[color]
+                    }
+                }
+                level.level.arena.createFromRemote(map)
+            } catch (e: JSONException) {
+                Gdx.app.log("SocketIO", "Error getting Board")
+            }
+        }
+        /**
+         *  GET INIT TIME
+         */
+        .on(MultiplayerEvent.INIT_TIMER.value) { args ->
+            Gdx.app.log("SocketIO", "Getting Board")
+
+            val data = args[0] as JSONObject
+            try {
+                val initTime = data.getLong("init")
+
+                logic.initTime = initTime
+            } catch (e: JSONException) {
+                Gdx.app.log("SocketIO", "Error getting Init Time")
+            }
+        }
+        /**
          *  NEW PLAYER
          */
-        //.on(MultiplayerEvent.NEW_PLAYER.value) { args ->
-        //    val data = args[0] as JSONObject
-        //    try {
-        //        val newPid = data.getString("id")
-        //        val team = data.getString("team")
-        //        val x = data.getDouble("x").toFloat()
-        //        val y = data.getDouble("y").toFloat()
-        //        val tileH = data.getDouble("tileH").toFloat()
-//
-        //        Gdx.app.log("SocketIO", "New Player Connect: " + newPid)
-//
-        //        val coords = level.arenaEntity.convertFromRemoteCoords(x, y, tileH)
-//
-        //        level.addRemotePlayer(Player(id = newPid, team = PaintColor.valueOf(team)),coords)
-        //    } catch (e: JSONException) {
-        //        Gdx.app.log("SocketIO", "Error getting New PlayerID")
-        //    }
-        //}
+        .on(MultiplayerEvent.NEW_PLAYER.value) { args ->
+            Gdx.app.log("SocketIO", "Getting New PlayerID")
+
+            val data = args[0] as JSONObject
+            try {
+                val newPid = data.getString("id")
+                val team = data.getString("color")
+                val row = data.getInt("row")
+                val col = data.getInt("col")
+
+                Gdx.app.log("SocketIO", "New Player Connect: " + newPid)
+
+                val coords = IsometricCoords(row, col)
+
+                level.addRemotePlayer(Player(id = newPid, team = PaintColor.valueOf(team), coordsIso = coords), coords)
+            } catch (e: JSONException) {
+                Gdx.app.log("SocketIO", "Error getting New PlayerID")
+            }
+        }
         /**
          *  GET PLAYERS
          */
-        //.on(MultiplayerEvent.GET_PLAYERS.value) { args ->
-        //    val objects = args[0] as JSONArray
-        //    try {
-        //        for (i in 0 until objects.length()) {
-        //            val newPid = objects.getJSONObject(i).getString("id")
-        //            val team = objects.getJSONObject(i).getString("team")
-        //            val x = objects.getJSONObject(i).getDouble("x").toFloat()
-        //            val y = objects.getJSONObject(i).getDouble("y").toFloat()
-        //            val tileH = objects.getJSONObject(i).getDouble("tileH").toFloat()
-//
-        //            val coords = level.arenaEntity.convertFromRemoteCoords(x, y, tileH)
-//
-        //            level.addRemotePlayer(Player(id = newPid, team = PaintColor.valueOf(team)), coords)
-        //        }
-        //    } catch (e: JSONException) {
-        //        Gdx.app.log("SocketIO", "Error getting Players")
-        //    }
-        //}
+        .on(MultiplayerEvent.GET_PLAYERS.value) { args ->
+            Gdx.app.log("SocketIO", "Getting Players")
+            val objects = args[0] as JSONArray
+            try {
+                // Clean player list
+                level.clearRemotePlayers()
+                for (i in 0 until objects.length()) {
+                    val newPid = objects.getJSONObject(i).getString("id")
+                    val team = objects.getJSONObject(i).getString("color")
+                    val row = objects.getJSONObject(i).getInt("row")
+                    val col = objects.getJSONObject(i).getInt("col")
+
+                    val coords = IsometricCoords(row,col)
+
+                    level.addRemotePlayer(Player(id = newPid, team = PaintColor.valueOf(team),coordsIso = coords), coords)
+                }
+            } catch (e: JSONException) {
+                Gdx.app.log("SocketIO", "Error getting Players")
+            }
+        }
         /**
          *  PAINTED TILE
          */
@@ -179,9 +250,29 @@ object MultiplayerHandler{
             try {
                 val row = data.getInt("row")
                 val col = data.getInt("col")
-                val color = data.getString("color")
+                val color = data.getInt("color")
 
-                level.arenaEntity.colorTile(row, col, PaintColor.valueOf(color))
+                level.arenaEntity.colorTile(row, col, PaintColor.values()[color])
+            } catch (e: JSONException) {
+                Gdx.app.log("SocketIO", "Error getting disconnected PlayerID")
+            }
+        }
+        /**
+         *  WEAPON USED
+         */
+        .on(MultiplayerEvent.WEAPON_USED.value) { args ->
+            val data = args[0] as JSONObject
+            try {
+                val row = data.getInt("row")
+                val col = data.getInt("col")
+                val color = data.getInt("color")
+                val weaponOrdinal = data.getInt("weapon")
+
+                if(weaponOrdinal == 0)
+                    level.level.arena.placeBombInk(IsometricCoords(row,col), PaintColor.values()[color])
+                if(weaponOrdinal == 1)
+                    level.level.arena.shootCannonInk(IsometricCoords(row,col), PaintColor.values()[color])
+
             } catch (e: JSONException) {
                 Gdx.app.log("SocketIO", "Error getting disconnected PlayerID")
             }
@@ -189,25 +280,26 @@ object MultiplayerHandler{
         /**
          *  PLAYER MOVED
          */
-        //.on(MultiplayerEvent.PLAYER_MOVED.value) { args ->
-        //    val data = args[0] as JSONObject
-        //    try {
-        //        val playerId = data.getString("id")
-        //        val coordX = data.getDouble("x").toFloat()
-        //        val coordY = data.getDouble("y").toFloat()
-        //        val tileH = data.getDouble("tileH").toFloat()
-//
-        //        val converted = level.arenaEntity.convertFromRemoteCoords(coordX,coordY,tileH)
-//
-        //        level.moveRemotePlayer(playerId, converted)
-        //    } catch (e: JSONException) {
-        //        Gdx.app.log("SocketIO", "Error getting disconnected PlayerID")
-        //    }
-        //}
+        .on(MultiplayerEvent.PLAYER_MOVED.value) { args ->
+            Gdx.app.log("SocketIO", "Player Moving")
+            val data = args[0] as JSONObject
+            try {
+                val playerId = data.getString("id")
+                val row = data.getInt("row")
+                val col = data.getInt("col")
+
+                val isoCoords = IsometricCoords(row, col)
+
+                level.moveRemotePlayer(playerId, isoCoords)
+            } catch (e: JSONException) {
+                Gdx.app.log("SocketIO", "Error player moving")
+            }
+        }
         /**
          *  PLAYER DISCONNECTED
          */
         .on(MultiplayerEvent.PLAYER_DISCONNECT.value) { args ->
+            Gdx.app.log("SocketIO", "Player disconnected")
             val data = args[0] as JSONObject
             try {
                 val playerId = data.getString("id")

@@ -15,6 +15,7 @@ import pt.nunomcards.inkink.model.PaintColor;
 
 public class PlayerAssetLoader {
 
+    public static TextureRegion player = new TextureRegion(new Texture("player.png"));
     public static TextureRegion[] playerWhite=    new TextureRegion[4];
     public static TextureRegion[] playerRed=      new TextureRegion[4];
     public static TextureRegion[] playerOrange=   new TextureRegion[4];

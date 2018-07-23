@@ -14,6 +14,12 @@ import pt.nunomcards.inkink.model.GameMode
 import pt.nunomcards.inkink.model.PaintColor
 import pt.nunomcards.inkink.utils.UIFactory
 import pt.nunomcards.inkink.utils.Vibration
+import com.sun.awt.SecurityWarning.setPosition
+import com.badlogic.gdx.assets.loaders.AssetLoader
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import pt.nunomcards.inkink.assetloader.SkinAssets
+import pt.nunomcards.inkink.utils.GdxUtils
+
 
 /**
  * Created by nuno on 04/07/2018.
@@ -22,6 +28,7 @@ class MultiplayerLobbyScreen : Screen {
     // ASSETS
     private val PATH_MP = "mplobby/"
     private val PATH_FONT = "fnts/"
+
     private val teamRed =           Texture(PATH_MP + "choose-team-red.png")
     private val teamOrange =        Texture(PATH_MP + "choose-team-orange.png")
     private val teamYellow =        Texture(PATH_MP + "choose-team-yellow.png")
@@ -33,6 +40,9 @@ class MultiplayerLobbyScreen : Screen {
     private val background =        Texture("background.png")
     private val button_back =       Texture("button-back.png")
     private val check =             Texture("check.png")
+
+    private val buttonPlay =        Texture("mainscreen/button-start.png")
+
 
     private val batch = SpriteBatch()
     private val game: Game
@@ -46,6 +56,7 @@ class MultiplayerLobbyScreen : Screen {
         createUI()
     }
 
+    var teamChosen = PaintColor.WHITE
     private fun createUI() {
         val root = Table()
         root.setFillParent(true)
@@ -68,8 +79,7 @@ class MultiplayerLobbyScreen : Screen {
                 btnLvl.addListener{ _ ->
                     Vibration.vibrate()
                     // CHANGE SCREEN
-                    val lvlColor = PaintColor.values()[color+1]
-                    game.screen = LevelScreen(game, LevelGenerator.getMultiPlayerLevel(lvlColor))
+                    teamChosen = PaintColor.values()[color+1]
                     true
                 }
                 stage.addActor(btnLvl)
@@ -96,6 +106,27 @@ class MultiplayerLobbyScreen : Screen {
             true
         }
         stage.addActor(backbutton)
+
+        // Start BUTTON
+        val startButton = UIFactory.createImageButton(buttonPlay)
+        startButton.setSize(side, button_back.height*side/button_back.width)
+        startButton.setPosition(GdxUtils.screenW/2-side/2, GdxUtils.screenW/60)
+        startButton.addListener { _ ->
+            // AUDIO
+            AudioAssets.selectSound.play()
+
+            Vibration.vibrate()
+            if(teamChosen != PaintColor.WHITE)
+                game.screen = LevelScreen(game, LevelGenerator.getMultiPlayerLevel(teamChosen))
+
+            true
+        }
+        stage.addActor(startButton)
+
+        val usernameTextField = TextField("", SkinAssets.skin)
+        usernameTextField.setPosition(24f, 73f)
+        usernameTextField.setSize(88f, 14f)
+        stage.addActor(usernameTextField)
     }
 
     override fun hide() {}

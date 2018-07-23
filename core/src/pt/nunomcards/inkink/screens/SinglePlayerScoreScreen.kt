@@ -55,7 +55,7 @@ class SinglePlayerScoreScreen : Screen {
         AudioAssets.endLevel.play()
     }
 
-    fun createUI() {
+    private fun createUI() {
         val side = GdxUtils.screenW / 6
 
         // BACK BUTTON

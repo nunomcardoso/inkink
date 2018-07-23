@@ -36,12 +36,21 @@ object LevelGenerator {
         }
     }
 
+    //
+    // MULTIPLAYER LEVEL
+    //
     fun getMultiPlayerLevel(color: PaintColor): Level{
-        val initCoords = IsometricCoords(0,0)
+        val row = Random().nextInt(10)
+        val col = Random().nextInt(10)
+        val initCoords = IsometricCoords(row,col)
+
         val arena = Arena(10,10)
 
-        val player = Player("", color)
-        return Level(initCoords,arena,player)
+        val player = Player("", color, currentPlayer = true)
+        player.weapons.add(Weapon(Weapon.WeaponType.BOMB, 10))
+        player.weapons.add(Weapon(Weapon.WeaponType.CANNON, 10))
+
+        return Level(initCoords,arena,player,gameMode = GameMode.MULTIPLAYER, timeToComplete = 100)
     }
 
     // ┌ ┘ └ ┴ ┬ ┐ ├ ─ ┤ │
